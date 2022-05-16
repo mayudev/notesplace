@@ -2,6 +2,7 @@ package validation_test
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/mayudev/notesplace/server/model"
@@ -28,6 +29,13 @@ func TestValidateNotebookCreate(t *testing.T) {
 				ProtectionLevel: 3,
 			},
 			ExpectedError: fmt.Errorf(util.InvalidProtectionLevel),
+		},
+		{
+			Notebook: model.NotebookCreate{
+				Name:            strings.Repeat("Long", 256),
+				ProtectionLevel: 0,
+			},
+			ExpectedError: fmt.Errorf(util.InvalidTitle),
 		},
 	}
 
