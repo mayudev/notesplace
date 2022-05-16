@@ -94,6 +94,27 @@ func TestCreateNotebook(t *testing.T) {
 		assert.Equal(t, 200, res.Code)
 		test.AssertDeepEqual(t, got, want)
 	})
+
+	t.Run("does not allow to create a notebook with incorrect protection level", func(t *testing.T) {
+		body := test.EncodeJson(t, model.NotebookCreate{
+			Name:            "new notebook",
+			ProtectionLevel: 3, // Invalid protection level
+		})
+
+		req := test.PostAPIRequest(t, "/api/notebook", body, http.Header{})
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		got := test.DecodeJson[util.Response](t, res)
+		want := util.Response{
+			Status:  "error",
+			Message: util.InvalidProtectionLevel,
+		}
+
+		assert.Equal(t, 400, res.Code)
+		test.AssertDeepEqual(t, got, want)
+	})
 }
 
 func TestDeleteNotebook(t *testing.T) {

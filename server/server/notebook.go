@@ -31,6 +31,13 @@ func (s *Server) createNotebookEndpoint(c *gin.Context) {
 		})
 	}
 
+	if createRequest.ProtectionLevel > 2 {
+		c.JSON(400, util.Response{
+			Status:  "error",
+			Message: util.InvalidProtectionLevel,
+		})
+	}
+
 	// TODO a lot, including id generation, password hashing
 	s.store.CreateNotebook(createRequest.Name, createRequest.ProtectionLevel, createRequest.Password)
 
@@ -45,7 +52,7 @@ func (s *Server) createNotebookEndpoint(c *gin.Context) {
 
 func (s *Server) deleteNotebookEndpoint(c *gin.Context) {
 	id := c.Param("id")
-	_, exists := s.store.GetNotebook(id)
+	notebook, exists := s.store.GetNotebook(id)
 
 	if !exists {
 		c.JSON(404, util.Response{
@@ -56,6 +63,11 @@ func (s *Server) deleteNotebookEndpoint(c *gin.Context) {
 	}
 
 	// TODO check privileges
+	if notebook.ProtectionLevel >= 1 {
+		// Authentication required
+	}
+
+	// TODO delete all notes
 
 	s.store.DeleteNotebook(id)
 	c.String(200, "Ok")
