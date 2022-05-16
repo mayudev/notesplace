@@ -6,56 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mayudev/notesplace/server"
 	"github.com/mayudev/notesplace/server/model"
+	"github.com/mayudev/notesplace/server/server"
 	"github.com/mayudev/notesplace/server/test"
 	"github.com/mayudev/notesplace/server/util"
 	"github.com/stretchr/testify/assert"
 )
-
-type StubServerStore struct {
-	notebooks map[string]model.Notebook
-}
-
-func NewStubServerStore() *StubServerStore {
-	store := StubServerStore{}
-	store.notebooks = map[string]model.Notebook{}
-
-	return &store
-}
-
-func (store *StubServerStore) GetNotebook(id string) (model.Notebook, bool) {
-	value, ok := store.notebooks[id]
-
-	if !ok {
-		return model.Notebook{}, false
-	}
-
-	return value, true
-}
-
-func (store *StubServerStore) CreateNotebook(id string, protection uint8, hash string) error {
-	store.notebooks[id] = model.Notebook{
-		ID:              id,
-		Name:            id,
-		Password:        hash,
-		ProtectionLevel: protection,
-		CreatedAt:       time.Now(),
-		UpdatedAt:       time.Now(),
-	}
-
-	return nil
-}
-
-func TestPingRoute(t *testing.T) {
-	router := server.NewServer(&StubServerStore{})
-
-	req, _ := http.NewRequest(http.MethodGet, "/ping", nil)
-	res := httptest.NewRecorder()
-	router.ServeHTTP(res, req)
-
-	assert.Equal(t, 200, res.Code)
-}
 
 func TestNotebookGet(t *testing.T) {
 	store := &StubServerStore{
