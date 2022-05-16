@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mayudev/notesplace/server/model"
 	"github.com/mayudev/notesplace/server/util"
+	"github.com/mayudev/notesplace/server/validation"
 )
 
 func (s *Server) getNotebookEndpoint(c *gin.Context) {
@@ -31,10 +32,12 @@ func (s *Server) createNotebookEndpoint(c *gin.Context) {
 		})
 	}
 
-	if createRequest.ProtectionLevel > 2 {
+	err := validation.ValidateNotebookCreate(createRequest)
+
+	if err != nil {
 		c.JSON(400, util.Response{
 			Status:  "error",
-			Message: util.InvalidProtectionLevel,
+			Message: err.Error(),
 		})
 	}
 
