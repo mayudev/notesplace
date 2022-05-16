@@ -15,6 +15,7 @@ type Server struct {
 type Store interface {
 	GetNotebook(id string) (model.Notebook, bool)
 	CreateNotebook(id string, protection uint8, hash string) error
+	DeleteNotebook(id string) error
 }
 
 func NewServer(store Store) *Server {
@@ -30,6 +31,7 @@ func (s *Server) setupRouter() *gin.Engine {
 	v := r.Group("/api/notebook")
 	{
 		v.GET("/:id", s.getNotebookEndpoint)
+		v.DELETE("/:id", s.deleteNotebookEndpoint)
 		v.POST("", s.createNotebookEndpoint)
 	}
 

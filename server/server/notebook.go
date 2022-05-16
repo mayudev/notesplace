@@ -42,3 +42,21 @@ func (s *Server) createNotebookEndpoint(c *gin.Context) {
 		},
 	})
 }
+
+func (s *Server) deleteNotebookEndpoint(c *gin.Context) {
+	id := c.Param("id")
+	_, exists := s.store.GetNotebook(id)
+
+	if !exists {
+		c.JSON(404, util.Response{
+			Status:  "error",
+			Message: util.NotebookNotFound,
+		})
+		return
+	}
+
+	// TODO check privileges
+
+	s.store.DeleteNotebook(id)
+	c.String(200, "Ok")
+}

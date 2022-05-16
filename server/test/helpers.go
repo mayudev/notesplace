@@ -31,6 +31,15 @@ func PostAPIRequest(t testing.TB, path string, body string, headers http.Header)
 	return req
 }
 
+func DeleteAPIRequest(t testing.TB, path string) *http.Request {
+	t.Helper()
+
+	req, err := http.NewRequest(http.MethodDelete, path, nil)
+	assert.NoError(t, err)
+
+	return req
+}
+
 func DecodeJson[T any](t testing.TB, res *httptest.ResponseRecorder) T {
 	t.Helper()
 	var got T

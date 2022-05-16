@@ -95,3 +95,28 @@ func TestCreateNotebook(t *testing.T) {
 		test.AssertDeepEqual(t, got, want)
 	})
 }
+
+func TestDeleteNotebook(t *testing.T) {
+	store := &StubServerStore{
+		notebooks: map[string]model.Notebook{
+			"1": {
+				ID:              "1",
+				Name:            "Test Notebook",
+				ProtectionLevel: 0,
+				CreatedAt:       time.UnixMicro(0),
+				UpdatedAt:       time.UnixMicro(0),
+			},
+		},
+	}
+
+	server := server.NewServer(store)
+
+	t.Run("deletes an unprotected notebook", func(t *testing.T) {
+		req := test.DeleteAPIRequest(t, "/api/notebook/1")
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		assert.Len(t, store.notebooks, 0)
+	})
+}

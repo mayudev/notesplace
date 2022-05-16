@@ -39,3 +39,9 @@ func (store *StubServerStore) CreateNotebook(id string, protection uint8, hash s
 
 	return nil
 }
+
+func (store *StubServerStore) DeleteNotebook(id string) error {
+	delete(store.notebooks, id)
+
+	return nil
+}
