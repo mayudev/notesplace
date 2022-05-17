@@ -16,6 +16,10 @@ type Note struct {
 	//
 	// Required.
 	Title string `json:"title"`
+	// Note order.
+	//
+	// Required.
+	Order *uint `json:"order"`
 	// Note contents
 	//
 	// Optional. Markdown formatted.
