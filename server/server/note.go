@@ -81,3 +81,37 @@ func (s *Server) putNoteEndpoint(c *gin.Context) {
 
 	c.JSON(200, result)
 }
+
+func (s *Server) deleteNoteEndpoint(c *gin.Context) {
+	id := c.Param("id")
+
+	// TODO DRY
+	note, exists := s.store.GetNote(id)
+
+	if !exists {
+		c.JSON(404, util.Response{
+			Status:  "error",
+			Message: util.NoteNotFound,
+		})
+		return
+	}
+
+	// Fetch notebook
+	notebook, exists := s.store.GetNotebook(note.NotebookID)
+	if !exists {
+		c.JSON(404, util.Response{
+			Status:  "error",
+			Message: util.NotebookNotFound,
+		})
+		return
+	}
+
+	// Check if user is permitted to delete the note
+	if notebook.ProtectionLevel > 0 {
+		// Authentication required
+	}
+
+	s.store.DeleteNote(id)
+	c.String(200, "Ok")
+	return
+}

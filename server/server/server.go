@@ -21,6 +21,7 @@ type Store interface {
 	// Note
 	GetNote(id string) (model.Note, bool)
 	UpdateNote(data model.Note) (model.Note, error)
+	DeleteNote(id string) error
 }
 
 func NewServer(store Store) *Server {
@@ -43,6 +44,7 @@ func (s *Server) setupRouter() *gin.Engine {
 	note := r.Group("/api/note")
 	{
 		note.GET("/:id", s.getNoteEndpoint)
+		note.DELETE("/:id", s.deleteNoteEndpoint)
 		note.PUT("", s.putNoteEndpoint)
 	}
 

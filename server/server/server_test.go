@@ -81,3 +81,8 @@ func (store *StubServerStore) UpdateNote(data model.Note) (model.Note, error) {
 
 	return store.notes[data.ID], nil
 }
+
+func (store *StubServerStore) DeleteNote(id string) error {
+	delete(store.notes, id)
+	return nil
+}

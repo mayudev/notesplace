@@ -112,5 +112,37 @@ func TestNotePut(t *testing.T) {
 }
 
 func TestNoteDelete(t *testing.T) {
+	store := &StubServerStore{
+		notebooks: map[string]model.Notebook{
+			"test_notebook": {
+				ID:              "test_notebook",
+				Name:            "Test Notebook",
+				ProtectionLevel: 0,
+				CreatedAt:       time.UnixMicro(0),
+				UpdatedAt:       time.UnixMicro(0),
+			},
+		},
+		notes: map[string]model.Note{
+			"test_note": {
+				ID:         "test_note",
+				NotebookID: "test_notebook",
+				Title:      "Before",
+				Order:      nil,
+				Content:    "Before",
+				CreatedAt:  time.UnixMicro(0),
+				UpdatedAt:  time.UnixMicro(0),
+			},
+		},
+	}
 
+	server := server.NewServer(store)
+
+	t.Run("deletes a note in an unprotected notebook", func(t *testing.T) {
+		req := test.DeleteAPIRequest(t, "/api/note/test_note")
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		assert.Len(t, store.notes, 0)
+	})
 }
