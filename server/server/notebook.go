@@ -19,6 +19,15 @@ func (s *Server) getNotebookEndpoint(c *gin.Context) {
 		return
 	}
 
+	// Check if read access is required
+	if notebook.ProtectionLevel > 1 {
+		c.JSON(401, util.Response{
+			Status:  "error",
+			Message: util.Unauthorized,
+		})
+		return
+	}
+
 	c.JSON(200, notebook)
 }
 
@@ -68,8 +77,13 @@ func (s *Server) deleteNotebookEndpoint(c *gin.Context) {
 		return
 	}
 
-	// TODO check privileges
-	if notebook.ProtectionLevel >= 1 {
+	// Check if write access is required
+	if notebook.ProtectionLevel > 0 {
+		c.JSON(401, util.Response{
+			Status:  "error",
+			Message: util.Unauthorized,
+		})
+		return
 		// Authentication required
 	}
 

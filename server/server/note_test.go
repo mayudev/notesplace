@@ -12,31 +12,63 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNoteGet(t *testing.T) {
-	store := &StubServerStore{
-		notebooks: map[string]model.Notebook{
-			"test_notebook": {
-				ID:              "test_notebook",
-				Name:            "Test Notebook",
-				ProtectionLevel: 0,
-				CreatedAt:       time.UnixMicro(0),
-				UpdatedAt:       time.UnixMicro(0),
-			},
+var store StubServerStore = StubServerStore{
+	notebooks: map[string]model.Notebook{
+		"test_notebook": {
+			ID:              "test_notebook",
+			Name:            "Test Notebook",
+			ProtectionLevel: 0,
+			CreatedAt:       time.UnixMicro(0),
+			UpdatedAt:       time.UnixMicro(0),
 		},
-		notes: map[string]model.Note{
-			"test_note": {
-				ID:         "test_note",
-				NotebookID: "test_notebook",
-				Title:      "Test note title",
-				Order:      nil,
-				Content:    "Test note contents",
-				CreatedAt:  time.UnixMicro(0),
-				UpdatedAt:  time.UnixMicro(0),
-			},
+		"readonly_notebook": {
+			ID:              "readonly_notebook",
+			Name:            "Read-only Notebook",
+			ProtectionLevel: 1,
+			CreatedAt:       time.UnixMicro(0),
+			UpdatedAt:       time.UnixMicro(0),
 		},
-	}
+		"protected_notebook": {
+			ID:              "protected_notebook",
+			Name:            "Protected Notebook",
+			ProtectionLevel: 2,
+			CreatedAt:       time.UnixMicro(0),
+			UpdatedAt:       time.UnixMicro(0),
+		},
+	},
+	notes: map[string]model.Note{
+		"test_note": {
+			ID:         "test_note",
+			NotebookID: "test_notebook",
+			Title:      "Test note title",
+			Order:      nil,
+			Content:    "Test note contents",
+			CreatedAt:  time.UnixMicro(0),
+			UpdatedAt:  time.UnixMicro(0),
+		},
+		"readonly_note": {
+			ID:         "readonly_note",
+			NotebookID: "readonly_notebook",
+			Title:      "Test note title",
+			Order:      nil,
+			Content:    "Test note contents",
+			CreatedAt:  time.UnixMicro(0),
+			UpdatedAt:  time.UnixMicro(0),
+		},
+		"protected_note": {
+			ID:         "protected_note",
+			NotebookID: "protected_notebook",
+			Title:      "Test note title",
+			Order:      nil,
+			Content:    "Test note contents",
+			CreatedAt:  time.UnixMicro(0),
+			UpdatedAt:  time.UnixMicro(0),
+		},
+	},
+}
 
-	server := server.NewServer(store)
+func TestNoteGet(t *testing.T) {
+	server := server.NewServer(&store)
 
 	t.Run("returns information about a note in an unprotected notebook", func(t *testing.T) {
 
@@ -51,34 +83,23 @@ func TestNoteGet(t *testing.T) {
 
 		assert.Equal(t, 200, res.Code)
 		test.AssertDeepEqual(t, got, want)
+
+	})
+
+	t.Run("refuses to return information about a note in a protected notebook", func(t *testing.T) {
+
+		req := test.GetAPIRequest(t, "/api/note/protected_note")
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		assert.Equal(t, 401, res.Code)
 	})
 }
 
 func TestNotePut(t *testing.T) {
-	store := &StubServerStore{
-		notebooks: map[string]model.Notebook{
-			"test_notebook": {
-				ID:              "test_notebook",
-				Name:            "Test Notebook",
-				ProtectionLevel: 0,
-				CreatedAt:       time.UnixMicro(0),
-				UpdatedAt:       time.UnixMicro(0),
-			},
-		},
-		notes: map[string]model.Note{
-			"test_note": {
-				ID:         "test_note",
-				NotebookID: "test_notebook",
-				Title:      "Before",
-				Order:      nil,
-				Content:    "Before",
-				CreatedAt:  time.UnixMicro(0),
-				UpdatedAt:  time.UnixMicro(0),
-			},
-		},
-	}
-
-	server := server.NewServer(store)
+	//var store StubServerStore = store
+	server := server.NewServer(&store)
 
 	t.Run("updates a note's title and content in an unprotected notebook", func(t *testing.T) {
 		body := test.EncodeJson(t, model.Note{
@@ -109,33 +130,44 @@ func TestNotePut(t *testing.T) {
 		test.AssertDeepEqual(t, got, want)
 		test.AssertDeepEqual(t, store.notes["test_note"], want)
 	})
+
+	t.Run("refuses an unprivileged user to update a note in a read-only notebook", func(t *testing.T) {
+		body := test.EncodeJson(t, model.Note{
+			ID:         "protected_note",
+			NotebookID: "protected_notebook",
+			Title:      "New title",
+			Order:      nil,
+			Content:    "New contents",
+		})
+
+		req := test.PutAPIRequest(t, "/api/note", body, http.Header{})
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		assert.Equal(t, 401, res.Code)
+	})
+
+	t.Run("refuses an uprivileged user to update a note from a different notebook", func(t *testing.T) {
+		body := test.EncodeJson(t, model.Note{
+			ID:         "protected_note",
+			NotebookID: "test_notebook", // here
+			Title:      "New title",
+			Order:      nil,
+			Content:    "New contents",
+		})
+
+		req := test.PutAPIRequest(t, "/api/note", body, http.Header{})
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		assert.Equal(t, 403, res.Code)
+	})
 }
 
 func TestNoteDelete(t *testing.T) {
-	store := &StubServerStore{
-		notebooks: map[string]model.Notebook{
-			"test_notebook": {
-				ID:              "test_notebook",
-				Name:            "Test Notebook",
-				ProtectionLevel: 0,
-				CreatedAt:       time.UnixMicro(0),
-				UpdatedAt:       time.UnixMicro(0),
-			},
-		},
-		notes: map[string]model.Note{
-			"test_note": {
-				ID:         "test_note",
-				NotebookID: "test_notebook",
-				Title:      "Before",
-				Order:      nil,
-				Content:    "Before",
-				CreatedAt:  time.UnixMicro(0),
-				UpdatedAt:  time.UnixMicro(0),
-			},
-		},
-	}
-
-	server := server.NewServer(store)
+	server := server.NewServer(&store)
 
 	t.Run("deletes a note in an unprotected notebook", func(t *testing.T) {
 		req := test.DeleteAPIRequest(t, "/api/note/test_note")
@@ -143,6 +175,16 @@ func TestNoteDelete(t *testing.T) {
 
 		server.ServeHTTP(res, req)
 
-		assert.Len(t, store.notes, 0)
+		assert.NotContains(t, store.notes, "test_note")
+	})
+
+	t.Run("refuses to delete a note in a read-only notebook", func(t *testing.T) {
+		req := test.DeleteAPIRequest(t, "/api/note/readonly_note")
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		assert.Equal(t, 401, res.Code)
+		assert.Contains(t, store.notes, "readonly_note")
 	})
 }

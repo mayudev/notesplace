@@ -23,6 +23,13 @@ func TestNotebookGet(t *testing.T) {
 				CreatedAt:       time.UnixMicro(0),
 				UpdatedAt:       time.UnixMicro(0),
 			},
+			"protected": {
+				ID:              "protected",
+				Name:            "Read-protected Notebook",
+				ProtectionLevel: 2,
+				CreatedAt:       time.UnixMicro(0),
+				UpdatedAt:       time.UnixMicro(0),
+			},
 		},
 	}
 
@@ -47,6 +54,16 @@ func TestNotebookGet(t *testing.T) {
 
 		assert.Equal(t, 200, res.Code)
 		test.AssertDeepEqual(t, got, want)
+	})
+
+	t.Run("does not return information about a protected notebook to an unauthorized user", func(t *testing.T) {
+
+		req := test.GetAPIRequest(t, "/api/notebook/protected")
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		assert.Equal(t, 401, res.Code)
 	})
 
 	t.Run("returns 404 with an error message on nonexistent notebook", func(t *testing.T) {
@@ -127,6 +144,13 @@ func TestDeleteNotebook(t *testing.T) {
 				CreatedAt:       time.UnixMicro(0),
 				UpdatedAt:       time.UnixMicro(0),
 			},
+			"protected": {
+				ID:              "protected",
+				Name:            "Read-only notebook",
+				ProtectionLevel: 1,
+				CreatedAt:       time.UnixMicro(0),
+				UpdatedAt:       time.UnixMicro(0),
+			},
 		},
 	}
 
@@ -138,6 +162,16 @@ func TestDeleteNotebook(t *testing.T) {
 
 		server.ServeHTTP(res, req)
 
-		assert.Len(t, store.notebooks, 0)
+		assert.NotContains(t, store.notebooks, "1")
+	})
+
+	t.Run("refuses to delete a notebook with read-only unprivileged access", func(t *testing.T) {
+		req := test.DeleteAPIRequest(t, "/api/notebook/protected")
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		assert.Contains(t, store.notebooks, "protected")
+		assert.Equal(t, 401, res.Code)
 	})
 }

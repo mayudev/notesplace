@@ -23,9 +23,13 @@ func (s *Server) getNoteEndpoint(c *gin.Context) {
 	// Fetch notebook
 	notebook, exists := s.store.GetNotebook(note.NotebookID)
 
-	// Check if user is permitted to see the note
+	// Check if read access is required
 	if notebook.ProtectionLevel > 1 {
-		// Authentication required
+		c.JSON(401, util.Response{
+			Status:  "error",
+			Message: util.Unauthorized,
+		})
+		return
 	}
 
 	// Return note
@@ -48,8 +52,13 @@ func (s *Server) putNoteEndpoint(c *gin.Context) {
 	// Fetch notebook
 	notebook, exists := s.store.GetNotebook(body.NotebookID)
 
-	// Check if user is permitted to edit the note
+	// Check if write access is required
 	if notebook.ProtectionLevel > 0 {
+		c.JSON(401, util.Response{
+			Status:  "error",
+			Message: util.Unauthorized,
+		})
+		return
 		// Authentication required
 	}
 
@@ -106,9 +115,13 @@ func (s *Server) deleteNoteEndpoint(c *gin.Context) {
 		return
 	}
 
-	// Check if user is permitted to delete the note
+	// Check if write access is required
 	if notebook.ProtectionLevel > 0 {
-		// Authentication required
+		c.JSON(401, util.Response{
+			Status:  "error",
+			Message: util.Unauthorized,
+		})
+		return
 	}
 
 	s.store.DeleteNote(id)
