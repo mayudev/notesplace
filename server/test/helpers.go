@@ -21,9 +21,17 @@ func GetAPIRequest(t testing.TB, path string) *http.Request {
 }
 
 func PostAPIRequest(t testing.TB, path string, body string, headers http.Header) *http.Request {
+	return requestWithBody(t, http.MethodPost, path, body, headers)
+}
+
+func PutAPIRequest(t testing.TB, path string, body string, headers http.Header) *http.Request {
+	return requestWithBody(t, http.MethodPut, path, body, headers)
+}
+
+func requestWithBody(t testing.TB, method string, path string, body string, headers http.Header) *http.Request {
 	t.Helper()
 
-	req, err := http.NewRequest(http.MethodPost, path, bytes.NewBufferString(body))
+	req, err := http.NewRequest(method, path, bytes.NewBufferString(body))
 	req.Header = headers
 
 	assert.NoError(t, err)

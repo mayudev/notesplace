@@ -13,9 +13,14 @@ type Server struct {
 }
 
 type Store interface {
+	// Notebook
 	GetNotebook(id string) (model.Notebook, bool)
 	CreateNotebook(id string, protection uint8, hash string) error
 	DeleteNotebook(id string) error
+
+	// Note
+	GetNote(id string) (model.Note, bool)
+	UpdateNote(data model.Note) (model.Note, error)
 }
 
 func NewServer(store Store) *Server {
@@ -28,11 +33,17 @@ func NewServer(store Store) *Server {
 func (s *Server) setupRouter() *gin.Engine {
 	r := gin.Default()
 
-	v := r.Group("/api/notebook")
+	notebook := r.Group("/api/notebook")
 	{
-		v.GET("/:id", s.getNotebookEndpoint)
-		v.DELETE("/:id", s.deleteNotebookEndpoint)
-		v.POST("", s.createNotebookEndpoint)
+		notebook.GET("/:id", s.getNotebookEndpoint)
+		notebook.DELETE("/:id", s.deleteNotebookEndpoint)
+		notebook.POST("", s.createNotebookEndpoint)
+	}
+
+	note := r.Group("/api/note")
+	{
+		note.GET("/:id", s.getNoteEndpoint)
+		note.PUT("", s.putNoteEndpoint)
 	}
 
 	return r
