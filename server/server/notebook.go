@@ -30,6 +30,7 @@ func (s *Server) createNotebookEndpoint(c *gin.Context) {
 			Status:  "error",
 			Message: util.RequestInvalid,
 		})
+		return
 	}
 
 	err := validation.ValidateNotebookCreate(createRequest)
@@ -39,6 +40,7 @@ func (s *Server) createNotebookEndpoint(c *gin.Context) {
 			Status:  "error",
 			Message: err.Error(),
 		})
+		return
 	}
 
 	// TODO a lot, including id generation, password hashing
@@ -51,6 +53,7 @@ func (s *Server) createNotebookEndpoint(c *gin.Context) {
 			Message: util.NotebookCreated,
 		},
 	})
+	return
 }
 
 func (s *Server) deleteNotebookEndpoint(c *gin.Context) {
@@ -74,4 +77,5 @@ func (s *Server) deleteNotebookEndpoint(c *gin.Context) {
 
 	s.store.DeleteNotebook(id)
 	c.String(200, "Ok")
+	return
 }
