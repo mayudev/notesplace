@@ -6,7 +6,7 @@ import "time"
 type Note struct {
 	// The note ID
 	//
-	// Required. Expected to be an ULID
+	// Required. Expected to be an UUID.
 	ID string `json:"id"`
 	// ID of the notebook the note belongs to
 	//

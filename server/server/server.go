@@ -20,6 +20,7 @@ type Store interface {
 
 	// Note
 	GetNote(id string) (model.Note, bool)
+	CreateNote(data *model.Note) error
 	UpdateNote(data model.Note) (model.Note, error)
 	DeleteNote(id string) error
 }

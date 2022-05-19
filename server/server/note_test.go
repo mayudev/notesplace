@@ -101,6 +101,35 @@ func TestNotePut(t *testing.T) {
 	//var store StubServerStore = store
 	server := server.NewServer(&store)
 
+	t.Run("creates a note if it doesn't exist", func(t *testing.T) {
+		body := test.EncodeJson(t, model.Note{
+			NotebookID: "test_notebook",
+			Title:      "New note",
+			Order:      nil,
+			Content:    "New note contents",
+		})
+
+		req := test.PutAPIRequest(t, "/api/note", body, http.Header{})
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		got := test.DecodeJson[model.Note](t, res)
+		want := model.Note{
+			ID:         got.ID, // ID will be generated in the backend
+			NotebookID: "test_notebook",
+			Title:      "New note",
+			Order:      nil,
+			Content:    "New note contents",
+			CreatedAt:  got.CreatedAt,
+			UpdatedAt:  got.UpdatedAt,
+		}
+
+		assert.Equal(t, 201, res.Code)
+		test.AssertDeepEqual(t, got, want)
+		test.AssertDeepEqual(t, store.notes[got.ID], want)
+	})
+
 	t.Run("updates a note's title and content in an unprotected notebook", func(t *testing.T) {
 		body := test.EncodeJson(t, model.Note{
 			ID:         "test_note",
