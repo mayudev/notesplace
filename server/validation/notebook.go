@@ -22,7 +22,13 @@ func ValidateNotebookCreate(notebook model.NotebookCreate) error {
 	}
 
 	// Validate Password
-	// TODO
+	if len(notebook.Password) > 512 {
+		return fmt.Errorf(util.PasswordTooLong)
+	}
+
+	if notebook.ProtectionLevel.WriteProtected() && len(notebook.Password) == 0 {
+		return fmt.Errorf(util.PasswordTooShort)
+	}
 
 	return nil
 }

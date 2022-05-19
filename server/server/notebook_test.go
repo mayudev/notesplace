@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mayudev/notesplace/server/auth"
 	"github.com/mayudev/notesplace/server/model"
 	"github.com/mayudev/notesplace/server/server"
 	"github.com/mayudev/notesplace/server/test"
@@ -100,8 +101,9 @@ func TestCreateNotebook(t *testing.T) {
 		server.ServeHTTP(res, req)
 
 		got := test.DecodeJson[model.NotebookCreateResponse](t, res)
+
 		want := model.NotebookCreateResponse{
-			ID: "new notebook",
+			ID: got.ID, // ID was randomly generated
 			Response: util.Response{
 				Status:  "success",
 				Message: util.NotebookCreated,
@@ -131,6 +133,37 @@ func TestCreateNotebook(t *testing.T) {
 
 		assert.Equal(t, 400, res.Code)
 		test.AssertDeepEqual(t, got, want)
+	})
+
+	t.Run("creates a new write protected notebook", func(t *testing.T) {
+		password := "supersecret"
+
+		body := test.EncodeJson(t, model.NotebookCreate{
+			Name:            "new notebook",
+			ProtectionLevel: 1,
+			Password:        password,
+		})
+
+		req := test.PostAPIRequest(t, "/api/notebook", body, http.Header{})
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		got := test.DecodeJson[model.NotebookCreateResponse](t, res)
+		want := model.NotebookCreateResponse{
+			ID: got.ID,
+			Response: util.Response{
+				Status:  "success",
+				Message: util.NotebookCreated,
+			},
+		}
+
+		assert.Equal(t, 200, res.Code)
+		test.AssertDeepEqual(t, got, want)
+
+		hashedPassword := store.notebooks[got.ID].Password
+		matches := auth.ComparePassword(hashedPassword, password)
+		assert.True(t, matches)
 	})
 }
 

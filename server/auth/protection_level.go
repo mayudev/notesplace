@@ -2,6 +2,9 @@ package auth
 
 type ProtectionLevel uint8
 
+var WriteProtected = 1
+var Protected = 2
+
 // WriteProtected checks if notebook is protected against writes,
 // i.e. is read only by unauthenticated users.
 func (p ProtectionLevel) WriteProtected() bool {

@@ -2,8 +2,10 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/mayudev/notesplace/server/auth"
 	"github.com/mayudev/notesplace/server/model"
 	"github.com/mayudev/notesplace/server/util"
+	"github.com/mayudev/notesplace/server/util/yeast"
 	"github.com/mayudev/notesplace/server/validation"
 )
 
@@ -26,25 +28,38 @@ func (s *Server) getNotebookEndpoint(c *gin.Context) {
 }
 
 func (s *Server) createNotebookEndpoint(c *gin.Context) {
-	var createRequest model.NotebookCreate
+	var req model.NotebookCreate
 
-	if err := c.ShouldBindJSON(&createRequest); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		badRequest(c)
 		return
 	}
 
-	err := validation.ValidateNotebookCreate(createRequest)
+	err := validation.ValidateNotebookCreate(req)
 
 	if err != nil {
 		badRequest(c)
 		return
 	}
 
-	// TODO a lot, including id generation, password hashing
-	s.store.CreateNotebook(createRequest.Name, createRequest.ProtectionLevel, createRequest.Password)
+	password := ""
+
+	// Password is to be set
+	if req.ProtectionLevel.WriteProtected() && req.Password != "" {
+		hash, err := auth.HashPassword(req.Password)
+		if err != nil {
+			internalServerError(c)
+			return
+		}
+
+		password = hash
+	}
+
+	id := yeast.Generate()
+	s.store.CreateNotebook(id, req.ProtectionLevel, password)
 
 	c.JSON(200, model.NotebookCreateResponse{
-		ID: createRequest.Name,
+		ID: id,
 		Response: util.Response{
 			Status:  "success",
 			Message: util.NotebookCreated,
