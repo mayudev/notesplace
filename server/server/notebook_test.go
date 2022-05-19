@@ -76,7 +76,7 @@ func TestNotebookGet(t *testing.T) {
 		got := test.DecodeJson[util.Response](t, res)
 		want := util.Response{
 			Status:  "error",
-			Message: util.NotebookNotFound,
+			Message: util.NotFound,
 		}
 
 		assert.Equal(t, 404, res.Code)
@@ -126,7 +126,7 @@ func TestCreateNotebook(t *testing.T) {
 		got := test.DecodeJson[util.Response](t, res)
 		want := util.Response{
 			Status:  "error",
-			Message: util.InvalidProtectionLevel,
+			Message: util.RequestInvalid,
 		}
 
 		assert.Equal(t, 400, res.Code)

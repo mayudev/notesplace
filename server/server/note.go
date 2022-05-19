@@ -16,10 +16,7 @@ func (s *Server) getNoteEndpoint(c *gin.Context) {
 	note, exists := s.store.GetNote(id)
 
 	if !exists {
-		c.JSON(404, util.Response{
-			Status:  "error",
-			Message: util.NotebookNotFound,
-		})
+		notFound(c)
 		return
 	}
 
@@ -27,11 +24,8 @@ func (s *Server) getNoteEndpoint(c *gin.Context) {
 	notebook, exists := s.store.GetNotebook(note.NotebookID)
 
 	// Check if read access is required
-	if notebook.ProtectionLevel > 1 {
-		c.JSON(401, util.Response{
-			Status:  "error",
-			Message: util.Unauthorized,
-		})
+	if notebook.ProtectionLevel.Protected() {
+		unauthorized(c)
 		return
 	}
 
@@ -58,7 +52,7 @@ func (s *Server) putNoteEndpoint(c *gin.Context) {
 	notebook, exists := s.store.GetNotebook(body.NotebookID)
 
 	// Check if notebook is protected against writes
-	if notebook.ProtectionLevel > 0 {
+	if notebook.ProtectionLevel.WriteProtected() {
 		// TODO Check if user has write access in the notebook
 		unauthorized(c)
 		return
@@ -101,41 +95,6 @@ func (s *Server) putNoteEndpoint(c *gin.Context) {
 	}
 
 	c.JSON(200, result)
-
-	// TODO validation.ValidateNoteUpdate(body)
-
-	/* if body.ID == "" {
-		// Create a new note
-		// TODO validation
-
-		// TODO
-		note := model.Note{
-			ID:         "", // todo
-			NotebookID: body.NotebookID,
-			Title:      body.Title,
-			Order:      body.Order, // TODO calculate order
-			Content:    body.Content,
-			CreatedAt:  time.UnixMicro(0),
-			UpdatedAt:  time.UnixMicro(0),
-		}
-
-		err := s.store.CreateNote(note)
-
-		if err != nil {
-			c.JSON(500, util.Response{
-				Status:  "error",
-				Message: "error", // todo
-			})
-			return
-		}
-
-		c.JSON(201, note)
-		return
-	} */
-
-	// TODO validate contents
-	// TODO DRY
-	// TODO dont ignore error
 }
 
 func (s *Server) deleteNoteEndpoint(c *gin.Context) {
@@ -145,29 +104,20 @@ func (s *Server) deleteNoteEndpoint(c *gin.Context) {
 	note, exists := s.store.GetNote(id)
 
 	if !exists {
-		c.JSON(404, util.Response{
-			Status:  "error",
-			Message: util.NoteNotFound,
-		})
+		notFound(c)
 		return
 	}
 
 	// Fetch notebook
 	notebook, exists := s.store.GetNotebook(note.NotebookID)
 	if !exists {
-		c.JSON(404, util.Response{
-			Status:  "error",
-			Message: util.NotebookNotFound,
-		})
+		notFound(c)
 		return
 	}
 
 	// Check if write access is required
-	if notebook.ProtectionLevel > 0 {
-		c.JSON(401, util.Response{
-			Status:  "error",
-			Message: util.Unauthorized,
-		})
+	if notebook.ProtectionLevel.WriteProtected() {
+		unauthorized(c)
 		return
 	}
 

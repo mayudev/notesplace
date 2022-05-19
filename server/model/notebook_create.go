@@ -1,6 +1,9 @@
 package model
 
-import "github.com/mayudev/notesplace/server/util"
+import (
+	"github.com/mayudev/notesplace/server/auth"
+	"github.com/mayudev/notesplace/server/util"
+)
 
 type NotebookCreate struct {
 	// Name of the notebook. Optional.
@@ -16,7 +19,7 @@ type NotebookCreate struct {
 	// Protected | 2 - protected. password needed to read
 	//
 	// Required.
-	ProtectionLevel uint8 `json:"protection_level"`
+	ProtectionLevel auth.ProtectionLevel `json:"protection_level"`
 	// Password (unencoded)
 	Password string `json:"password"`
 }

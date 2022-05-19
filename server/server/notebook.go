@@ -12,19 +12,13 @@ func (s *Server) getNotebookEndpoint(c *gin.Context) {
 	notebook, exists := s.store.GetNotebook(id)
 
 	if !exists {
-		c.JSON(404, util.Response{
-			Status:  "error",
-			Message: util.NotebookNotFound,
-		})
+		notFound(c)
 		return
 	}
 
 	// Check if read access is required
-	if notebook.ProtectionLevel > 1 {
-		c.JSON(401, util.Response{
-			Status:  "error",
-			Message: util.Unauthorized,
-		})
+	if notebook.ProtectionLevel.Protected() {
+		unauthorized(c)
 		return
 	}
 
@@ -35,20 +29,14 @@ func (s *Server) createNotebookEndpoint(c *gin.Context) {
 	var createRequest model.NotebookCreate
 
 	if err := c.ShouldBindJSON(&createRequest); err != nil {
-		c.JSON(400, util.Response{
-			Status:  "error",
-			Message: util.RequestInvalid,
-		})
+		badRequest(c)
 		return
 	}
 
 	err := validation.ValidateNotebookCreate(createRequest)
 
 	if err != nil {
-		c.JSON(400, util.Response{
-			Status:  "error",
-			Message: err.Error(),
-		})
+		badRequest(c)
 		return
 	}
 
@@ -70,19 +58,13 @@ func (s *Server) deleteNotebookEndpoint(c *gin.Context) {
 	notebook, exists := s.store.GetNotebook(id)
 
 	if !exists {
-		c.JSON(404, util.Response{
-			Status:  "error",
-			Message: util.NotebookNotFound,
-		})
+		notFound(c)
 		return
 	}
 
 	// Check if write access is required
-	if notebook.ProtectionLevel > 0 {
-		c.JSON(401, util.Response{
-			Status:  "error",
-			Message: util.Unauthorized,
-		})
+	if notebook.ProtectionLevel.WriteProtected() {
+		unauthorized(c)
 		return
 		// Authentication required
 	}

@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"github.com/mayudev/notesplace/server/auth"
+)
 
 // Notebook Model
 type Notebook struct {
@@ -27,7 +31,7 @@ type Notebook struct {
 	// Protected | 2 - protected. password needed to read
 	//
 	// Required.
-	ProtectionLevel uint8 `json:"protection_level"`
+	ProtectionLevel auth.ProtectionLevel `json:"protection_level"`
 	// Created at timestamp.
 	//
 	// Required.

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mayudev/notesplace/server/auth"
 	"github.com/mayudev/notesplace/server/model"
 )
 
@@ -29,7 +30,7 @@ func (store *StubServerStore) GetNotebook(id string) (model.Notebook, bool) {
 	return value, true
 }
 
-func (store *StubServerStore) CreateNotebook(id string, protection uint8, hash string) error {
+func (store *StubServerStore) CreateNotebook(id string, protection auth.ProtectionLevel, hash string) error {
 	store.notebooks[id] = model.Notebook{
 		ID:              id,
 		Name:            id,

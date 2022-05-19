@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mayudev/notesplace/server/auth"
 	"github.com/mayudev/notesplace/server/model"
 )
 
@@ -15,7 +16,7 @@ type Server struct {
 type Store interface {
 	// Notebook
 	GetNotebook(id string) (model.Notebook, bool)
-	CreateNotebook(id string, protection uint8, hash string) error
+	CreateNotebook(id string, protection auth.ProtectionLevel, hash string) error
 	DeleteNotebook(id string) error
 
 	// Note
