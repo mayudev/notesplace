@@ -189,6 +189,39 @@ func TestNotePut(t *testing.T) {
 		test.AssertDeepEqual(t, store.notes["test_note"], want)
 	})
 
+	t.Run("updates a note's title and content in a readonly notebook to an authenticated user", func(t *testing.T) {
+		token := test.AuthorizeFor(t, server, "readonly_notebook", password)
+
+		body := test.EncodeJson(t, model.Note{
+			ID:         "readonly_note",
+			NotebookID: "readonly_notebook",
+			Title:      "New title",
+			Order:      nil,
+			Content:    "New contents",
+		})
+
+		req := test.PutAPIRequest(t, "/api/note", body, http.Header{})
+		req.Header.Add("Authorization", "Bearer "+token)
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		got := test.DecodeJson[model.Note](t, res)
+		want := model.Note{
+			ID:         "readonly_note",
+			NotebookID: "readonly_notebook",
+			Title:      "New title",
+			Order:      nil,
+			Content:    "New contents",
+			CreatedAt:  got.CreatedAt,
+			UpdatedAt:  got.UpdatedAt,
+		}
+
+		assert.Equal(t, 200, res.Code)
+		test.AssertDeepEqual(t, got, want)
+		test.AssertDeepEqual(t, store.notes["readonly_note"], want)
+	})
+
 	t.Run("refuses an unprivileged user to update a note in a read-only notebook", func(t *testing.T) {
 		body := test.EncodeJson(t, model.Note{
 			ID:         "readonly_note",

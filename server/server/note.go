@@ -61,9 +61,12 @@ func (s *Server) putNoteEndpoint(c *gin.Context) {
 
 	// Check if notebook is protected against writes
 	if notebook.ProtectionLevel.WriteProtected() {
-		// TODO Check if user has write access in the notebook
-		unauthorized(c)
-		return
+		valid := s.Validate(c, notebook.ID)
+
+		if !valid {
+			unauthorized(c)
+			return
+		}
 	}
 
 	// If ID was not specified, proceed to create a new note.
