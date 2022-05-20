@@ -5,28 +5,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/mayudev/notesplace/server/auth"
-	"github.com/mayudev/notesplace/server/model"
+	"github.com/mayudev/notesplace/server/repository"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Server struct {
 	http.Handler
-	store  Store
+	store  *repository.Repository
 	issuer *auth.Issuer
 	hasher *auth.Hasher
-}
-
-type Store interface {
-	// Notebook
-	GetNotebook(id string) (model.Notebook, bool)
-	CreateNotebook(id string, protection auth.ProtectionLevel, hash string) error
-	DeleteNotebook(id string) error
-
-	// Note
-	GetNote(id string) (model.Note, bool)
-	CreateNote(data *model.Note) error
-	UpdateNote(data model.Note) (model.Note, error)
-	DeleteNote(id string) error
 }
 
 type ServerOptions struct {
@@ -34,8 +21,8 @@ type ServerOptions struct {
 	HashingCost int
 }
 
-func NewServer(store Store, options ServerOptions) *Server {
-	s := &Server{store: store}
+func NewServer(store repository.Store, options ServerOptions) *Server {
+	s := &Server{store: repository.NewRepository(store)}
 	s.Handler = s.setupRouter()
 	s.issuer = auth.NewIssuer(options.PrivateKey)
 

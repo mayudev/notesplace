@@ -19,7 +19,7 @@ type Note struct {
 	// Note order.
 	//
 	// Required.
-	Order *uint `json:"order"`
+	Order uint `json:"order"`
 	// Note contents
 	//
 	// Optional. Markdown formatted.

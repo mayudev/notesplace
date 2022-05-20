@@ -95,9 +95,6 @@ func (s *Server) putNoteEndpoint(c *gin.Context) {
 		return
 	}
 
-	// Set last update time
-	body.UpdatedAt = time.Now()
-
 	// Update the note
 	result, err := s.store.UpdateNote(body)
 
@@ -149,7 +146,7 @@ func newNote(note *model.Note) *model.Note {
 		ID:         util.GenerateID().String(), // todo
 		NotebookID: note.NotebookID,
 		Title:      note.Title,
-		Order:      nil, // TODO calculate order
+		Order:      0, // TODO calculate order
 		Content:    note.Content,
 		CreatedAt:  time.UnixMicro(0),
 		UpdatedAt:  time.UnixMicro(0),

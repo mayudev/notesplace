@@ -1,7 +1,6 @@
 package server_test
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/mayudev/notesplace/server/auth"
@@ -59,29 +58,22 @@ func (store *StubServerStore) GetNote(id string) (model.Note, bool) {
 	return value, true
 }
 
+func (store *StubServerStore) GetNoteByOrder(notebook string, order uint) (model.Note, bool) {
+	for _, v := range store.notes {
+		if v.Order == order {
+			return v, true
+		}
+	}
+
+	return model.Note{}, false
+}
+
 func (store *StubServerStore) UpdateNote(data model.Note) (model.Note, error) {
-	note, ok := store.GetNote(data.ID)
-	if !ok {
-		return model.Note{}, fmt.Errorf("note not found")
-	}
-
-	if data.Content != "" {
-		note.Content = data.Content
-	}
-
-	if data.Title != "" {
-		note.Title = data.Title
-	}
-
-	if data.Order != nil {
-		// TODO reorder other notes (possibly not here)
-		note.Order = data.Order
-	}
-
-	store.notes[data.ID] = note
+	store.notes[data.ID] = data
 
 	return store.notes[data.ID], nil
 }
+
 func (store *StubServerStore) CreateNote(data *model.Note) error {
 	store.notes[data.ID] = *data
 
