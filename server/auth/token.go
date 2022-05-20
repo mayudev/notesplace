@@ -12,20 +12,20 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-type issuer struct {
+type Issuer struct {
 	SigningKey []byte
 }
 
 // NewIssuer returns a new configured JWT issuer
-func NewIssuer(key string) *issuer {
-	issuer := issuer{}
+func NewIssuer(key string) *Issuer {
+	issuer := Issuer{}
 	issuer.SigningKey = []byte(key)
 
 	return &issuer
 }
 
 // Issue issues a new JWT
-func (issuer *issuer) Issue(id string) (string, error) {
+func (issuer *Issuer) Issue(id string) (string, error) {
 	claims := Claims{
 		NotebookID: id,
 		StandardClaims: jwt.StandardClaims{
@@ -47,7 +47,7 @@ func (issuer *issuer) Issue(id string) (string, error) {
 }
 
 // Validate tries to validate a JWT, returning Claims or an error
-func (issuer *issuer) Validate(token string) (*Claims, error) {
+func (issuer *Issuer) Validate(token string) (*Claims, error) {
 	parsed, err := jwt.ParseWithClaims(
 		token,
 		&Claims{},
@@ -73,7 +73,7 @@ func (issuer *issuer) Validate(token string) (*Claims, error) {
 }
 
 // ValidateNotebook validates if a token grants authorized access to a notebook
-func (issuer *issuer) ValidateNotebook(token string, notebookID string) bool {
+func (issuer *Issuer) ValidateNotebook(token string, notebookID string) bool {
 	validated, err := issuer.Validate(token)
 	if err != nil {
 		return false

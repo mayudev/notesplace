@@ -25,8 +25,13 @@ func (s *Server) authenticateEndpoint(c *gin.Context) {
 	match := auth.ComparePassword(notebook.Password, password)
 
 	if match {
-		// Issue a JWT
-		c.String(200, "")
+		token, err := s.issuer.Issue(id)
+		if err != nil {
+			internalServerError(c)
+			return
+		}
+
+		c.String(200, token)
 	} else {
 		c.JSON(401, util.Response{
 			Status:  "error",

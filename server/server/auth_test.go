@@ -1,6 +1,7 @@
 package server_test
 
 import (
+	"io/ioutil"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -13,13 +14,14 @@ import (
 )
 
 func TestAuthenticate(t *testing.T) {
+	notebook_id := "protected"
 	password := "unsafe_password"
 	hashed, _ := auth.HashPassword(password)
 
 	store := StubServerStore{
 		notebooks: map[string]model.Notebook{
 			"protected": {
-				ID:              "protected",
+				ID:              notebook_id,
 				Password:        hashed,
 				ProtectionLevel: 2,
 				CreatedAt:       time.UnixMicro(0),
@@ -28,25 +30,34 @@ func TestAuthenticate(t *testing.T) {
 		},
 	}
 
+	issuerKey := "unsafe_key"
 	server := server.NewServer(&store, server.ServerOptions{
-		PrivateKey: "unsafe_key",
+		PrivateKey: issuerKey,
 	})
 
-	t.Run("authenticates with valid credentials", func(t *testing.T) {
+	t.Run("returns a valid JWT with valid credentials", func(t *testing.T) {
+
 		req := test.GetAPIRequest(t, "/api/auth")
-		req.Header.Add("Notebook", "protected")
+		req.Header.Add("Notebook", notebook_id)
 		req.Header.Add("Password", password)
 
 		res := httptest.NewRecorder()
 
 		server.ServeHTTP(res, req)
 
+		body, err := ioutil.ReadAll(res.Body)
+		assert.NoError(t, err)
+
+		anIssuer := auth.NewIssuer(issuerKey)
+		valid := anIssuer.ValidateNotebook(string(body), notebook_id)
+
+		assert.True(t, valid)
 		assert.Equal(t, 200, res.Code)
 	})
 
 	t.Run("refuses to authenticate with invalid credentials", func(t *testing.T) {
 		req := test.GetAPIRequest(t, "/api/auth")
-		req.Header.Add("Notebook", "protected")
+		req.Header.Add("Notebook", notebook_id)
 		req.Header.Add("Password", "incorrect_password")
 
 		res := httptest.NewRecorder()

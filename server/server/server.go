@@ -10,8 +10,8 @@ import (
 
 type Server struct {
 	http.Handler
-	store      Store
-	privateKey []byte
+	store  Store
+	issuer *auth.Issuer
 }
 
 type Store interface {
@@ -34,7 +34,7 @@ type ServerOptions struct {
 func NewServer(store Store, options ServerOptions) *Server {
 	s := &Server{store: store}
 	s.Handler = s.setupRouter()
-	s.privateKey = []byte(options.PrivateKey)
+	s.issuer = auth.NewIssuer(options.PrivateKey)
 
 	return s
 }
