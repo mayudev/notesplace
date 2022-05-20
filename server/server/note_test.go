@@ -191,8 +191,8 @@ func TestNotePut(t *testing.T) {
 
 	t.Run("refuses an unprivileged user to update a note in a read-only notebook", func(t *testing.T) {
 		body := test.EncodeJson(t, model.Note{
-			ID:         "protected_note",
-			NotebookID: "protected_notebook",
+			ID:         "readonly_note",
+			NotebookID: "readonly_notebook",
 			Title:      "New title",
 			Order:      nil,
 			Content:    "New contents",
