@@ -2,9 +2,19 @@ package auth
 
 import "golang.org/x/crypto/bcrypt"
 
+type Hasher struct {
+	Cost int
+}
+
+func NewHasher() *Hasher {
+	return &Hasher{
+		Cost: bcrypt.DefaultCost,
+	}
+}
+
 // HashPassword hashes a password
-func HashPassword(password string) (string, error) {
-	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+func (h *Hasher) HashPassword(password string) (string, error) {
+	hashed, err := bcrypt.GenerateFromPassword([]byte(password), h.Cost)
 
 	if err != nil {
 		return "", err

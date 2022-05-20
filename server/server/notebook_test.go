@@ -12,6 +12,7 @@ import (
 	"github.com/mayudev/notesplace/server/test"
 	"github.com/mayudev/notesplace/server/util"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestNotebookGet(t *testing.T) {
@@ -35,7 +36,8 @@ func TestNotebookGet(t *testing.T) {
 	}
 
 	server := server.NewServer(store, server.ServerOptions{
-		PrivateKey: "",
+		PrivateKey:  "",
+		HashingCost: bcrypt.MinCost,
 	})
 
 	t.Run("returns information about a notebook with no protection", func(t *testing.T) {
@@ -90,7 +92,8 @@ func TestNotebookGet(t *testing.T) {
 func TestCreateNotebook(t *testing.T) {
 	store := NewStubServerStore()
 	server := server.NewServer(store, server.ServerOptions{
-		PrivateKey: "",
+		PrivateKey:  "",
+		HashingCost: bcrypt.MinCost,
 	})
 
 	t.Run("creates a notebook", func(t *testing.T) {
@@ -192,7 +195,8 @@ func TestDeleteNotebook(t *testing.T) {
 	}
 
 	server := server.NewServer(store, server.ServerOptions{
-		PrivateKey: "",
+		PrivateKey:  "",
+		HashingCost: bcrypt.MinCost,
 	})
 
 	t.Run("deletes an unprotected notebook", func(t *testing.T) {

@@ -6,12 +6,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mayudev/notesplace/server/auth"
 	"github.com/mayudev/notesplace/server/model"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Server struct {
 	http.Handler
 	store  Store
 	issuer *auth.Issuer
+	hasher *auth.Hasher
 }
 
 type Store interface {
@@ -28,13 +30,22 @@ type Store interface {
 }
 
 type ServerOptions struct {
-	PrivateKey string
+	PrivateKey  string
+	HashingCost int
 }
 
 func NewServer(store Store, options ServerOptions) *Server {
 	s := &Server{store: store}
 	s.Handler = s.setupRouter()
 	s.issuer = auth.NewIssuer(options.PrivateKey)
+
+	hashingCost := bcrypt.DefaultCost
+
+	if options.HashingCost >= bcrypt.MinCost && options.HashingCost <= bcrypt.MaxCost {
+		hashingCost = options.HashingCost
+	}
+
+	s.hasher = &auth.Hasher{Cost: hashingCost}
 
 	return s
 }

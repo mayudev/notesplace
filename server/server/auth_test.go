@@ -11,12 +11,14 @@ import (
 	"github.com/mayudev/notesplace/server/server"
 	"github.com/mayudev/notesplace/server/test"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestAuthenticate(t *testing.T) {
 	notebook_id := "protected"
 	password := "unsafe_password"
-	hashed, _ := auth.HashPassword(password)
+	hasher := auth.Hasher{Cost: bcrypt.MinCost}
+	hashed, _ := hasher.HashPassword(password)
 
 	store := StubServerStore{
 		notebooks: map[string]model.Notebook{

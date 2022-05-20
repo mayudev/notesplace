@@ -2,7 +2,6 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/mayudev/notesplace/server/auth"
 	"github.com/mayudev/notesplace/server/model"
 	"github.com/mayudev/notesplace/server/util"
 	"github.com/mayudev/notesplace/server/util/yeast"
@@ -46,7 +45,7 @@ func (s *Server) createNotebookEndpoint(c *gin.Context) {
 
 	// Password is to be set
 	if req.ProtectionLevel.WriteProtected() && req.Password != "" {
-		hash, err := auth.HashPassword(req.Password)
+		hash, err := s.hasher.HashPassword(req.Password)
 		if err != nil {
 			internalServerError(c)
 			return
