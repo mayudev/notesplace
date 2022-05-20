@@ -26,6 +26,11 @@ func (r *Repository) UpdateNote(data model.Note) (model.Note, error) {
 	}
 
 	if data.Order != note.Order {
+		count := r.store.NoteCount(data.NotebookID)
+		if data.Order >= count {
+			return model.Note{}, fmt.Errorf("incorrect order")
+		}
+
 		if data.Order > note.Order {
 			// Note has been moved __up__
 			for i := note.Order + 1; i <= data.Order; i++ {
@@ -54,6 +59,9 @@ func (r *Repository) UpdateNote(data model.Note) (model.Note, error) {
 }
 
 func (r *Repository) CreateNote(data *model.Note) error {
+	count := r.store.NoteCount(data.NotebookID)
+
+	data.Order = count
 	return r.store.CreateNote(data)
 }
 

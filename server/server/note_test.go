@@ -148,7 +148,7 @@ func TestNotePut(t *testing.T) {
 			ID:         got.ID, // ID will be generated in the backend
 			NotebookID: "test_notebook",
 			Title:      "New note",
-			Order:      0,
+			Order:      got.Order,
 			Content:    "New note contents",
 			CreatedAt:  got.CreatedAt,
 			UpdatedAt:  got.UpdatedAt,
