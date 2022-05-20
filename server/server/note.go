@@ -23,14 +23,22 @@ func (s *Server) getNoteEndpoint(c *gin.Context) {
 	// Fetch notebook
 	notebook, exists := s.store.GetNotebook(note.NotebookID)
 
-	// Check if read access is required
-	if notebook.ProtectionLevel.Protected() {
-		unauthorized(c)
+	if !exists {
+		notFound(c)
 		return
 	}
 
-	// Return note
+	// Check if read access is required
+	if notebook.ProtectionLevel.Protected() {
+		valid := s.Validate(c, notebook.ID)
 
+		if !valid {
+			unauthorized(c)
+			return
+		}
+	}
+
+	// Return note
 	c.JSON(200, note)
 }
 

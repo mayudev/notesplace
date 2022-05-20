@@ -10,7 +10,10 @@ import (
 	"github.com/mayudev/notesplace/server/server"
 	"github.com/mayudev/notesplace/server/test"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/bcrypt"
 )
+
+var password = "unsafe_password"
 
 var store StubServerStore = StubServerStore{
 	notebooks: map[string]model.Notebook{
@@ -25,6 +28,7 @@ var store StubServerStore = StubServerStore{
 			ID:              "readonly_notebook",
 			Name:            "Read-only Notebook",
 			ProtectionLevel: 1,
+			Password:        test.HashWithDefault(password),
 			CreatedAt:       time.UnixMicro(0),
 			UpdatedAt:       time.UnixMicro(0),
 		},
@@ -32,6 +36,7 @@ var store StubServerStore = StubServerStore{
 			ID:              "protected_notebook",
 			Name:            "Protected Notebook",
 			ProtectionLevel: 2,
+			Password:        test.HashWithDefault(password),
 			CreatedAt:       time.UnixMicro(0),
 			UpdatedAt:       time.UnixMicro(0),
 		},
@@ -68,8 +73,11 @@ var store StubServerStore = StubServerStore{
 }
 
 func TestNoteGet(t *testing.T) {
+	key := "qwerty"
+
 	server := server.NewServer(&store, server.ServerOptions{
-		PrivateKey: "",
+		PrivateKey:  key,
+		HashingCost: bcrypt.MinCost,
 	})
 
 	t.Run("returns information about a note in an unprotected notebook", func(t *testing.T) {
@@ -96,6 +104,23 @@ func TestNoteGet(t *testing.T) {
 		server.ServeHTTP(res, req)
 
 		assert.Equal(t, 401, res.Code)
+	})
+
+	t.Run("returns information about a note in a protected notebook to an authenticated user", func(t *testing.T) {
+		token := test.AuthorizeFor(t, server, "protected_notebook", password)
+
+		req := test.GetAPIRequest(t, "/api/note/protected_note")
+		req.Header.Add("Authorization", "Bearer "+token)
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		want := store.notes["protected_note"]
+
+		got := test.DecodeJson[model.Note](t, res)
+
+		assert.Equal(t, 200, res.Code)
+		test.AssertDeepEqual(t, got, want)
 	})
 }
 

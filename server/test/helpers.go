@@ -99,7 +99,7 @@ func AuthorizeFor(t testing.TB, server *server.Server, notebook, password string
 	t.Helper()
 
 	authReq := GetAPIRequest(t, "/api/auth")
-	authReq.Header.Add("Notebook", "protected")
+	authReq.Header.Add("Notebook", notebook)
 	authReq.Header.Add("Password", password)
 	authRes := httptest.NewRecorder()
 
