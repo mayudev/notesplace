@@ -1,7 +1,6 @@
 package server_test
 
 import (
-	"fmt"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -43,7 +42,6 @@ func TestAuthenticate(t *testing.T) {
 		server.ServeHTTP(res, req)
 
 		assert.Equal(t, 200, res.Code)
-		fmt.Println(res.Body)
 	})
 
 	t.Run("refuses to authenticate with invalid credentials", func(t *testing.T) {
@@ -56,6 +54,5 @@ func TestAuthenticate(t *testing.T) {
 		server.ServeHTTP(res, req)
 
 		assert.Equal(t, 401, res.Code)
-		fmt.Println(res.Body)
 	})
 }

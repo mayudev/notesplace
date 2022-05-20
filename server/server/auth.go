@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/mayudev/notesplace/server/auth"
+	"github.com/mayudev/notesplace/server/util"
 )
 
 func (s *Server) authenticateEndpoint(c *gin.Context) {
@@ -24,8 +25,12 @@ func (s *Server) authenticateEndpoint(c *gin.Context) {
 	match := auth.ComparePassword(notebook.Password, password)
 
 	if match {
+		// Issue a JWT
 		c.String(200, "")
 	} else {
-		c.String(401, "")
+		c.JSON(401, util.Response{
+			Status:  "error",
+			Message: util.IncorrectPassword,
+		})
 	}
 }

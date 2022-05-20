@@ -10,6 +10,7 @@ var Unauthorized = "unauthorized"
 var InternalServerError = "internal server error"
 var PasswordTooLong = "password too long"
 var PasswordTooShort = "password too short"
+var IncorrectPassword = "incorrect password"
 
 type Response struct {
 	Status  string `json:"status"`
