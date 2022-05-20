@@ -37,6 +37,21 @@ func TestValidateNotebookCreate(t *testing.T) {
 			},
 			ExpectedError: fmt.Errorf(util.InvalidTitle),
 		},
+		{
+			Notebook: model.NotebookCreate{
+				Name:            "Correct",
+				ProtectionLevel: 1,
+			},
+			ExpectedError: fmt.Errorf(util.PasswordTooShort),
+		},
+		{
+			Notebook: model.NotebookCreate{
+				Name:            "Correct",
+				ProtectionLevel: 1,
+				Password:        strings.Repeat("a", 513),
+			},
+			ExpectedError: fmt.Errorf(util.PasswordTooLong),
+		},
 	}
 
 	for _, tt := range cases {
