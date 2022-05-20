@@ -18,8 +18,8 @@ import (
 func TestNotebookGet(t *testing.T) {
 	password := "qwerty"
 
-	store := &StubServerStore{
-		notebooks: map[string]model.Notebook{
+	store := &test.StubServerStore{
+		Notebooks: map[string]model.Notebook{
 			"1": {
 				ID:              "1",
 				Name:            "Test Notebook",
@@ -128,7 +128,7 @@ func TestNotebookGet(t *testing.T) {
 }
 
 func TestCreateNotebook(t *testing.T) {
-	store := NewStubServerStore()
+	store := test.NewStubServerStore()
 	server := server.NewServer(store, server.ServerOptions{
 		PrivateKey:  "",
 		HashingCost: bcrypt.MinCost,
@@ -206,7 +206,7 @@ func TestCreateNotebook(t *testing.T) {
 		assert.Equal(t, 200, res.Code)
 		test.AssertDeepEqual(t, got, want)
 
-		hashedPassword := store.notebooks[got.ID].Password
+		hashedPassword := store.Notebooks[got.ID].Password
 		matches := auth.ComparePassword(hashedPassword, password)
 		assert.True(t, matches)
 	})
@@ -215,8 +215,8 @@ func TestCreateNotebook(t *testing.T) {
 func TestDeleteNotebook(t *testing.T) {
 	password := "unsafe_password"
 
-	store := &StubServerStore{
-		notebooks: map[string]model.Notebook{
+	store := &test.StubServerStore{
+		Notebooks: map[string]model.Notebook{
 			"1": {
 				ID:              "1",
 				Name:            "Test Notebook",
@@ -246,7 +246,7 @@ func TestDeleteNotebook(t *testing.T) {
 
 		server.ServeHTTP(res, req)
 
-		assert.NotContains(t, store.notebooks, "1")
+		assert.NotContains(t, store.Notebooks, "1")
 	})
 
 	t.Run("refuses to delete a notebook with read-only unprivileged access", func(t *testing.T) {
@@ -255,7 +255,7 @@ func TestDeleteNotebook(t *testing.T) {
 
 		server.ServeHTTP(res, req)
 
-		assert.Contains(t, store.notebooks, "protected")
+		assert.Contains(t, store.Notebooks, "protected")
 		assert.Equal(t, 401, res.Code)
 	})
 
@@ -269,6 +269,6 @@ func TestDeleteNotebook(t *testing.T) {
 		server.ServeHTTP(res, req)
 
 		assert.Equal(t, 200, res.Code)
-		assert.NotContains(t, store.notebooks, "protected")
+		assert.NotContains(t, store.Notebooks, "protected")
 	})
 }

@@ -1,4 +1,4 @@
-package server_test
+package test
 
 import (
 	"time"
@@ -8,19 +8,19 @@ import (
 )
 
 type StubServerStore struct {
-	notebooks map[string]model.Notebook
-	notes     map[string]model.Note
+	Notebooks map[string]model.Notebook
+	Notes     map[string]model.Note
 }
 
 func NewStubServerStore() *StubServerStore {
 	store := StubServerStore{}
-	store.notebooks = map[string]model.Notebook{}
+	store.Notebooks = map[string]model.Notebook{}
 
 	return &store
 }
 
 func (store *StubServerStore) GetNotebook(id string) (model.Notebook, bool) {
-	value, ok := store.notebooks[id]
+	value, ok := store.Notebooks[id]
 
 	if !ok {
 		return model.Notebook{}, false
@@ -30,7 +30,7 @@ func (store *StubServerStore) GetNotebook(id string) (model.Notebook, bool) {
 }
 
 func (store *StubServerStore) CreateNotebook(id string, protection auth.ProtectionLevel, hash string) error {
-	store.notebooks[id] = model.Notebook{
+	store.Notebooks[id] = model.Notebook{
 		ID:              id,
 		Name:            id,
 		Password:        hash,
@@ -43,7 +43,7 @@ func (store *StubServerStore) CreateNotebook(id string, protection auth.Protecti
 }
 
 func (store *StubServerStore) DeleteNotebook(id string) error {
-	delete(store.notebooks, id)
+	delete(store.Notebooks, id)
 
 	return nil
 }
@@ -51,7 +51,7 @@ func (store *StubServerStore) DeleteNotebook(id string) error {
 func (store *StubServerStore) NoteCount(notebook string) uint {
 	var count uint = 0
 
-	for _, v := range store.notes {
+	for _, v := range store.Notes {
 		if v.NotebookID == notebook {
 			count++
 		}
@@ -61,7 +61,7 @@ func (store *StubServerStore) NoteCount(notebook string) uint {
 }
 
 func (store *StubServerStore) GetNote(id string) (model.Note, bool) {
-	value, ok := store.notes[id]
+	value, ok := store.Notes[id]
 
 	if !ok {
 		return model.Note{}, false
@@ -71,7 +71,7 @@ func (store *StubServerStore) GetNote(id string) (model.Note, bool) {
 }
 
 func (store *StubServerStore) GetNoteByOrder(notebook string, order uint) (model.Note, bool) {
-	for _, v := range store.notes {
+	for _, v := range store.Notes {
 		if v.Order == order {
 			return v, true
 		}
@@ -81,18 +81,18 @@ func (store *StubServerStore) GetNoteByOrder(notebook string, order uint) (model
 }
 
 func (store *StubServerStore) UpdateNote(data model.Note) (model.Note, error) {
-	store.notes[data.ID] = data
+	store.Notes[data.ID] = data
 
-	return store.notes[data.ID], nil
+	return store.Notes[data.ID], nil
 }
 
 func (store *StubServerStore) CreateNote(data *model.Note) error {
-	store.notes[data.ID] = *data
+	store.Notes[data.ID] = *data
 
 	return nil
 }
 
 func (store *StubServerStore) DeleteNote(id string) error {
-	delete(store.notes, id)
+	delete(store.Notes, id)
 	return nil
 }

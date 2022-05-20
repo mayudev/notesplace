@@ -16,8 +16,8 @@ func TestAuthenticate(t *testing.T) {
 	notebook_id := "protected"
 	password := "unsafe_password"
 
-	store := StubServerStore{
-		notebooks: map[string]model.Notebook{
+	store := test.StubServerStore{
+		Notebooks: map[string]model.Notebook{
 			"protected": {
 				ID:              notebook_id,
 				Password:        test.HashWithDefault(password),

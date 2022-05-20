@@ -15,8 +15,8 @@ import (
 
 var password = "unsafe_password"
 
-var store StubServerStore = StubServerStore{
-	notebooks: map[string]model.Notebook{
+var store test.StubServerStore = test.StubServerStore{
+	Notebooks: map[string]model.Notebook{
 		"test_notebook": {
 			ID:              "test_notebook",
 			Name:            "Test Notebook",
@@ -41,7 +41,7 @@ var store StubServerStore = StubServerStore{
 			UpdatedAt:       time.UnixMicro(0),
 		},
 	},
-	notes: map[string]model.Note{
+	Notes: map[string]model.Note{
 		"test_note": {
 			ID:         "test_note",
 			NotebookID: "test_notebook",
@@ -87,7 +87,7 @@ func TestNoteGet(t *testing.T) {
 
 		server.ServeHTTP(res, req)
 
-		want := store.notes["test_note"]
+		want := store.Notes["test_note"]
 
 		got := test.DecodeJson[model.Note](t, res)
 
@@ -115,7 +115,7 @@ func TestNoteGet(t *testing.T) {
 
 		server.ServeHTTP(res, req)
 
-		want := store.notes["protected_note"]
+		want := store.Notes["protected_note"]
 
 		got := test.DecodeJson[model.Note](t, res)
 
@@ -156,7 +156,7 @@ func TestNotePut(t *testing.T) {
 
 		assert.Equal(t, 201, res.Code)
 		test.AssertDeepEqual(t, got, want)
-		test.AssertDeepEqual(t, store.notes[got.ID], want)
+		test.AssertDeepEqual(t, store.Notes[got.ID], want)
 	})
 
 	t.Run("updates a note's title and content in an unprotected notebook", func(t *testing.T) {
@@ -186,7 +186,7 @@ func TestNotePut(t *testing.T) {
 
 		assert.Equal(t, 200, res.Code)
 		test.AssertDeepEqual(t, got, want)
-		test.AssertDeepEqual(t, store.notes["test_note"], want)
+		test.AssertDeepEqual(t, store.Notes["test_note"], want)
 	})
 
 	t.Run("updates a note's title and content in a readonly notebook to an authenticated user", func(t *testing.T) {
@@ -219,7 +219,7 @@ func TestNotePut(t *testing.T) {
 
 		assert.Equal(t, 200, res.Code)
 		test.AssertDeepEqual(t, got, want)
-		test.AssertDeepEqual(t, store.notes["readonly_note"], want)
+		test.AssertDeepEqual(t, store.Notes["readonly_note"], want)
 	})
 
 	t.Run("refuses an unprivileged user to update a note in a read-only notebook", func(t *testing.T) {
@@ -257,9 +257,9 @@ func TestNotePut(t *testing.T) {
 	})
 }
 
-func orderedStore() StubServerStore {
-	return StubServerStore{
-		notebooks: map[string]model.Notebook{
+func orderedStore() test.StubServerStore {
+	return test.StubServerStore{
+		Notebooks: map[string]model.Notebook{
 			"notebook": {
 				ID:              "notebook",
 				Name:            "Notebook",
@@ -268,7 +268,7 @@ func orderedStore() StubServerStore {
 				UpdatedAt:       time.UnixMicro(0),
 			},
 		},
-		notes: map[string]model.Note{
+		Notes: map[string]model.Note{
 			"note_0": {
 				ID:         "note_0",
 				NotebookID: "notebook",
@@ -343,10 +343,10 @@ func TestNoteReorder(t *testing.T) {
 		test.AssertDeepEqual(t, got, want)
 
 		// Check if notes have been reordered properly
-		assert.Equal(t, uint(0), store.notes["note_0"].Order)
-		assert.Equal(t, uint(1), store.notes["note_2"].Order)
-		assert.Equal(t, uint(2), store.notes["note_3"].Order)
-		assert.Equal(t, uint(3), store.notes["note_1"].Order)
+		assert.Equal(t, uint(0), store.Notes["note_0"].Order)
+		assert.Equal(t, uint(1), store.Notes["note_2"].Order)
+		assert.Equal(t, uint(2), store.Notes["note_3"].Order)
+		assert.Equal(t, uint(3), store.Notes["note_1"].Order)
 	})
 
 	t.Run("moves all notes down", func(t *testing.T) {
@@ -381,10 +381,10 @@ func TestNoteReorder(t *testing.T) {
 		test.AssertDeepEqual(t, got, want)
 
 		// Check if notes have been reordered properly
-		assert.Equal(t, uint(0), store.notes["note_0"].Order)
-		assert.Equal(t, uint(1), store.notes["note_3"].Order)
-		assert.Equal(t, uint(2), store.notes["note_1"].Order)
-		assert.Equal(t, uint(3), store.notes["note_2"].Order)
+		assert.Equal(t, uint(0), store.Notes["note_0"].Order)
+		assert.Equal(t, uint(1), store.Notes["note_3"].Order)
+		assert.Equal(t, uint(2), store.Notes["note_1"].Order)
+		assert.Equal(t, uint(3), store.Notes["note_2"].Order)
 	})
 
 	t.Run("moves all notes down on deletion", func(t *testing.T) {
@@ -398,11 +398,11 @@ func TestNoteReorder(t *testing.T) {
 
 		server.ServeHTTP(res, req)
 
-		assert.NotContains(t, store.notes, "test_note")
+		assert.NotContains(t, store.Notes, "test_note")
 
-		assert.Equal(t, uint(0), store.notes["note_0"].Order)
-		assert.Equal(t, uint(1), store.notes["note_2"].Order)
-		assert.Equal(t, uint(2), store.notes["note_3"].Order)
+		assert.Equal(t, uint(0), store.Notes["note_0"].Order)
+		assert.Equal(t, uint(1), store.Notes["note_2"].Order)
+		assert.Equal(t, uint(2), store.Notes["note_3"].Order)
 	})
 }
 
@@ -417,7 +417,7 @@ func TestNoteDelete(t *testing.T) {
 
 		server.ServeHTTP(res, req)
 
-		assert.NotContains(t, store.notes, "test_note")
+		assert.NotContains(t, store.Notes, "test_note")
 	})
 
 	t.Run("refuses to delete a note in a read-only notebook", func(t *testing.T) {
@@ -427,7 +427,7 @@ func TestNoteDelete(t *testing.T) {
 		server.ServeHTTP(res, req)
 
 		assert.Equal(t, 401, res.Code)
-		assert.Contains(t, store.notes, "readonly_note")
+		assert.Contains(t, store.Notes, "readonly_note")
 	})
 
 	t.Run("deletes a note in a read-only notebook for an authenticated user", func(t *testing.T) {
@@ -440,6 +440,6 @@ func TestNoteDelete(t *testing.T) {
 		server.ServeHTTP(res, req)
 
 		assert.Equal(t, 200, res.Code)
-		assert.NotContains(t, store.notes, "readonly_note")
+		assert.NotContains(t, store.Notes, "readonly_note")
 	})
 }
