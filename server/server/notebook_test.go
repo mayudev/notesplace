@@ -213,6 +213,8 @@ func TestCreateNotebook(t *testing.T) {
 }
 
 func TestDeleteNotebook(t *testing.T) {
+	password := "unsafe_password"
+
 	store := &StubServerStore{
 		notebooks: map[string]model.Notebook{
 			"1": {
@@ -225,6 +227,7 @@ func TestDeleteNotebook(t *testing.T) {
 			"protected": {
 				ID:              "protected",
 				Name:            "Read-only notebook",
+				Password:        test.HashWithDefault(password),
 				ProtectionLevel: 1,
 				CreatedAt:       time.UnixMicro(0),
 				UpdatedAt:       time.UnixMicro(0),
@@ -254,5 +257,18 @@ func TestDeleteNotebook(t *testing.T) {
 
 		assert.Contains(t, store.notebooks, "protected")
 		assert.Equal(t, 401, res.Code)
+	})
+
+	t.Run("deletes a protected notebook as an authenticated user", func(t *testing.T) {
+		token := test.AuthorizeFor(t, server, "protected", password)
+
+		req := test.DeleteAPIRequest(t, "/api/notebook/protected")
+		req.Header.Add("Authorization", "Bearer "+token)
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		assert.Equal(t, 200, res.Code)
+		assert.NotContains(t, store.notebooks, "protected")
 	})
 }
