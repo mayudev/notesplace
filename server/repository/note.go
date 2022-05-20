@@ -68,6 +68,10 @@ func (r *Repository) UpdateNote(data model.Note) (model.Note, error) {
 func (r *Repository) CreateNote(data *model.Note) (*model.Note, error) {
 	count := r.store.NoteCount(data.NotebookID)
 
+	if count > 2000 {
+		return &model.Note{}, fmt.Errorf("exceeded note limit")
+	}
+
 	// Generate an ID
 	id := util.GenerateID().String()
 	note := &model.Note{
