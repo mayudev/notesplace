@@ -48,6 +48,18 @@ func (store *StubServerStore) DeleteNotebook(id string) error {
 	return nil
 }
 
+func (store *StubServerStore) NoteCount(notebook string) uint {
+	var count uint = 0
+
+	for _, v := range store.notes {
+		if v.NotebookID == notebook {
+			count++
+		}
+	}
+
+	return count
+}
+
 func (store *StubServerStore) GetNote(id string) (model.Note, bool) {
 	value, ok := store.notes[id]
 

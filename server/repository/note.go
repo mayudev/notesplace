@@ -57,6 +57,17 @@ func (r *Repository) CreateNote(data *model.Note) error {
 	return r.store.CreateNote(data)
 }
 
-func (r *Repository) DeleteNote(id string) error {
-	return r.store.DeleteNote(id)
+func (r *Repository) DeleteNote(data *model.Note) error {
+	count := r.store.NoteCount(data.NotebookID)
+
+	for i := data.Order; i < count; i++ {
+		note, exists := r.store.GetNoteByOrder(data.NotebookID, i)
+		if !exists {
+			continue
+		}
+		note.Order--
+		r.store.UpdateNote(note)
+	}
+
+	return r.store.DeleteNote(data.ID)
 }

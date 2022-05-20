@@ -133,7 +133,7 @@ func (s *Server) deleteNoteEndpoint(c *gin.Context) {
 		}
 	}
 
-	s.store.DeleteNote(id)
+	s.store.DeleteNote(&note)
 	c.String(200, "Ok")
 	return
 }

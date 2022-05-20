@@ -387,6 +387,23 @@ func TestNoteReorder(t *testing.T) {
 		assert.Equal(t, uint(3), store.notes["note_2"].Order)
 	})
 
+	t.Run("moves all notes down on deletion", func(t *testing.T) {
+		store := orderedStore()
+		server := server.NewServer(&store, server.ServerOptions{
+			PrivateKey: "",
+		})
+
+		req := test.DeleteAPIRequest(t, "/api/note/note_1")
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		assert.NotContains(t, store.notes, "test_note")
+
+		assert.Equal(t, uint(0), store.notes["note_0"].Order)
+		assert.Equal(t, uint(1), store.notes["note_2"].Order)
+		assert.Equal(t, uint(2), store.notes["note_3"].Order)
+	})
 }
 
 func TestNoteDelete(t *testing.T) {

@@ -19,4 +19,5 @@ type Store interface {
 
 	// Internal
 	GetNoteByOrder(notebook string, order uint) (model.Note, bool)
+	NoteCount(notebook string) uint
 }
