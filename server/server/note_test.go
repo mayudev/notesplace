@@ -280,4 +280,17 @@ func TestNoteDelete(t *testing.T) {
 		assert.Equal(t, 401, res.Code)
 		assert.Contains(t, store.notes, "readonly_note")
 	})
+
+	t.Run("deletes a note in a read-only notebook for an authenticated user", func(t *testing.T) {
+		token := test.AuthorizeFor(t, server, "readonly_notebook", password)
+
+		req := test.DeleteAPIRequest(t, "/api/note/readonly_note")
+		req.Header.Add("Authorization", "Bearer "+token)
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		assert.Equal(t, 200, res.Code)
+		assert.NotContains(t, store.notes, "readonly_note")
+	})
 }

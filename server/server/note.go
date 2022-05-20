@@ -128,8 +128,12 @@ func (s *Server) deleteNoteEndpoint(c *gin.Context) {
 
 	// Check if write access is required
 	if notebook.ProtectionLevel.WriteProtected() {
-		unauthorized(c)
-		return
+		valid := s.Validate(c, notebook.ID)
+
+		if !valid {
+			unauthorized(c)
+			return
+		}
 	}
 
 	s.store.DeleteNote(id)
