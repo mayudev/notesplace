@@ -68,7 +68,9 @@ var store StubServerStore = StubServerStore{
 }
 
 func TestNoteGet(t *testing.T) {
-	server := server.NewServer(&store)
+	server := server.NewServer(&store, server.ServerOptions{
+		PrivateKey: "",
+	})
 
 	t.Run("returns information about a note in an unprotected notebook", func(t *testing.T) {
 
@@ -99,7 +101,9 @@ func TestNoteGet(t *testing.T) {
 
 func TestNotePut(t *testing.T) {
 	//var store StubServerStore = store
-	server := server.NewServer(&store)
+	server := server.NewServer(&store, server.ServerOptions{
+		PrivateKey: "",
+	})
 
 	t.Run("creates a note if it doesn't exist", func(t *testing.T) {
 		body := test.EncodeJson(t, model.Note{
@@ -196,7 +200,9 @@ func TestNotePut(t *testing.T) {
 }
 
 func TestNoteDelete(t *testing.T) {
-	server := server.NewServer(&store)
+	server := server.NewServer(&store, server.ServerOptions{
+		PrivateKey: "",
+	})
 
 	t.Run("deletes a note in an unprotected notebook", func(t *testing.T) {
 		req := test.DeleteAPIRequest(t, "/api/note/test_note")

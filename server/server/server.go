@@ -10,7 +10,8 @@ import (
 
 type Server struct {
 	http.Handler
-	store Store
+	store      Store
+	privateKey []byte
 }
 
 type Store interface {
@@ -26,9 +27,14 @@ type Store interface {
 	DeleteNote(id string) error
 }
 
-func NewServer(store Store) *Server {
+type ServerOptions struct {
+	PrivateKey string
+}
+
+func NewServer(store Store, options ServerOptions) *Server {
 	s := &Server{store: store}
 	s.Handler = s.setupRouter()
+	s.privateKey = []byte(options.PrivateKey)
 
 	return s
 }
@@ -49,6 +55,8 @@ func (s *Server) setupRouter() *gin.Engine {
 		note.DELETE("/:id", s.deleteNoteEndpoint)
 		note.PUT("", s.putNoteEndpoint)
 	}
+
+	r.GET("/api/auth", s.authenticateEndpoint)
 
 	return r
 }

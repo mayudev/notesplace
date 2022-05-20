@@ -34,7 +34,9 @@ func TestNotebookGet(t *testing.T) {
 		},
 	}
 
-	server := server.NewServer(store)
+	server := server.NewServer(store, server.ServerOptions{
+		PrivateKey: "",
+	})
 
 	t.Run("returns information about a notebook with no protection", func(t *testing.T) {
 
@@ -87,7 +89,9 @@ func TestNotebookGet(t *testing.T) {
 
 func TestCreateNotebook(t *testing.T) {
 	store := NewStubServerStore()
-	server := server.NewServer(store)
+	server := server.NewServer(store, server.ServerOptions{
+		PrivateKey: "",
+	})
 
 	t.Run("creates a notebook", func(t *testing.T) {
 		body := test.EncodeJson(t, model.NotebookCreate{
@@ -187,7 +191,9 @@ func TestDeleteNotebook(t *testing.T) {
 		},
 	}
 
-	server := server.NewServer(store)
+	server := server.NewServer(store, server.ServerOptions{
+		PrivateKey: "",
+	})
 
 	t.Run("deletes an unprotected notebook", func(t *testing.T) {
 		req := test.DeleteAPIRequest(t, "/api/notebook/1")
