@@ -100,6 +100,16 @@ func TestUpdateNote(t *testing.T) {
 		assert.Equal(t, uint(1), store.Notes["note_3"].Order)
 		assert.Equal(t, uint(0), store.Notes["note_2"].Order)
 	})
+
+	t.Run("reorders notes when necessary (down)", func(t *testing.T) {
+		note3 := store.Notes["note_3"]
+		note3.Order = 0
+
+		repo.UpdateNote(note3)
+
+		assert.Equal(t, uint(0), store.Notes["note_3"].Order)
+		assert.Equal(t, uint(1), store.Notes["note_2"].Order)
+	})
 }
 
 func TestCreateNote(t *testing.T) {

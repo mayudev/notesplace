@@ -50,6 +50,11 @@ func (r *Repository) UpdateNote(data model.Note) (model.Note, error) {
 				}
 				existing.Order++
 				r.store.UpdateNote(existing)
+
+				// prevent overflow
+				if i == 0 {
+					break
+				}
 			}
 		}
 		note.Order = data.Order
