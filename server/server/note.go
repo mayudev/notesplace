@@ -139,20 +139,3 @@ func (s *Server) deleteNoteEndpoint(c *gin.Context) {
 	c.String(200, "Ok")
 	return
 }
-
-/* func newNote(note *model.Note) *model.Note {
-	// TODO validation
-
-	// TODO
-	mew := model.Note{
-		ID:         util.GenerateID().String(), // todo
-		NotebookID: note.NotebookID,
-		Title:      note.Title,
-		Order:      0, // TODO calculate order
-		Content:    note.Content,
-		CreatedAt:  time.UnixMicro(0),
-		UpdatedAt:  time.UnixMicro(0),
-	}
-
-	return &mew
-} */
