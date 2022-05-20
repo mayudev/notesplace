@@ -1,8 +1,6 @@
 package server
 
 import (
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/mayudev/notesplace/server/model"
 	"github.com/mayudev/notesplace/server/util"
@@ -71,8 +69,12 @@ func (s *Server) putNoteEndpoint(c *gin.Context) {
 
 	// If ID was not specified, proceed to create a new note.
 	if body.ID == "" {
-		note := newNote(&body)
-		s.store.CreateNote(note)
+		note, err := s.store.CreateNote(&body)
+
+		if err != nil {
+			internalServerError(c)
+		}
+
 		c.JSON(201, note)
 		return
 	}
@@ -138,7 +140,7 @@ func (s *Server) deleteNoteEndpoint(c *gin.Context) {
 	return
 }
 
-func newNote(note *model.Note) *model.Note {
+/* func newNote(note *model.Note) *model.Note {
 	// TODO validation
 
 	// TODO
@@ -153,4 +155,4 @@ func newNote(note *model.Note) *model.Note {
 	}
 
 	return &mew
-}
+} */

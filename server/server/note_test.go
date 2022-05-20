@@ -156,7 +156,6 @@ func TestNotePut(t *testing.T) {
 
 		assert.Equal(t, 201, res.Code)
 		test.AssertDeepEqual(t, got, want)
-		test.AssertDeepEqual(t, store.Notes[got.ID], want)
 	})
 
 	t.Run("updates a note's title and content in an unprotected notebook", func(t *testing.T) {

@@ -2,8 +2,10 @@ package repository
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/mayudev/notesplace/server/model"
+	"github.com/mayudev/notesplace/server/util"
 )
 
 func (r *Repository) GetNote(id string) (model.Note, bool) {
@@ -63,11 +65,22 @@ func (r *Repository) UpdateNote(data model.Note) (model.Note, error) {
 	return r.store.UpdateNote(note)
 }
 
-func (r *Repository) CreateNote(data *model.Note) error {
+func (r *Repository) CreateNote(data *model.Note) (*model.Note, error) {
 	count := r.store.NoteCount(data.NotebookID)
 
-	data.Order = count
-	return r.store.CreateNote(data)
+	// Generate an ID
+	id := util.GenerateID().String()
+	note := &model.Note{
+		ID:         id,
+		NotebookID: data.NotebookID,
+		Title:      data.Title,
+		Order:      count,
+		Content:    data.Content,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+	}
+
+	return note, r.store.CreateNote(note)
 }
 
 func (r *Repository) DeleteNote(data *model.Note) error {

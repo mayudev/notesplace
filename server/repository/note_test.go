@@ -134,16 +134,15 @@ func TestCreateNote(t *testing.T) {
 
 	t.Run("creates a new note and assigns correct order to it", func(t *testing.T) {
 		newNote := &model.Note{
-			ID:         "note_2", // TODO insert ID generation in repository
 			NotebookID: "notebook",
 			Title:      "Note 2",
 		}
 
-		err := repo.CreateNote(newNote)
+		note, err := repo.CreateNote(newNote)
 		assert.NoError(t, err)
 
-		assert.Equal(t, "note_2", store.Notes["note_2"].ID)
-		assert.Equal(t, uint(1), store.Notes["note_2"].Order)
+		assert.Equal(t, "notebook", store.Notes[note.ID].NotebookID)
+		assert.Equal(t, uint(1), store.Notes[note.ID].Order)
 	})
 
 }
