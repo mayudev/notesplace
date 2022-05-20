@@ -17,7 +17,7 @@ func ValidateNotebookCreate(notebook model.NotebookCreate) error {
 
 	// Validate Title
 	length := utf8.RuneCountInString(notebook.Name)
-	if length < 1 && length > 256 {
+	if length < 1 || length > 256 {
 		return fmt.Errorf(util.InvalidTitle)
 	}
 
