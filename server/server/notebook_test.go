@@ -16,6 +16,8 @@ import (
 )
 
 func TestNotebookGet(t *testing.T) {
+	password := "qwerty"
+
 	store := &StubServerStore{
 		notebooks: map[string]model.Notebook{
 			"1": {
@@ -28,6 +30,7 @@ func TestNotebookGet(t *testing.T) {
 			"protected": {
 				ID:              "protected",
 				Name:            "Read-protected Notebook",
+				Password:        test.HashWithDefault(password),
 				ProtectionLevel: 2,
 				CreatedAt:       time.UnixMicro(0),
 				UpdatedAt:       time.UnixMicro(0),
@@ -35,8 +38,10 @@ func TestNotebookGet(t *testing.T) {
 		},
 	}
 
+	key := "unsafe_key"
+
 	server := server.NewServer(store, server.ServerOptions{
-		PrivateKey:  "",
+		PrivateKey:  key,
 		HashingCost: bcrypt.MinCost,
 	})
 
@@ -64,6 +69,39 @@ func TestNotebookGet(t *testing.T) {
 	t.Run("does not return information about a protected notebook to an unauthorized user", func(t *testing.T) {
 
 		req := test.GetAPIRequest(t, "/api/notebook/protected")
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		assert.Equal(t, 401, res.Code)
+	})
+
+	t.Run("returns information about a protected notebook to an authorized user", func(t *testing.T) {
+		token := test.AuthorizeFor(t, server, "protected", password)
+
+		req := test.GetAPIRequest(t, "/api/notebook/protected")
+		req.Header.Add("Authorization", "Bearer "+token)
+		res := httptest.NewRecorder()
+
+		server.ServeHTTP(res, req)
+
+		want := model.Notebook{
+			ID:              "protected",
+			Name:            "Read-protected Notebook",
+			ProtectionLevel: 2,
+			CreatedAt:       time.UnixMicro(0),
+			UpdatedAt:       time.UnixMicro(0),
+		}
+
+		got := test.DecodeJson[model.Notebook](t, res)
+
+		assert.Equal(t, 200, res.Code)
+		test.AssertDeepEqual(t, got, want)
+	})
+
+	t.Run("does not return information about a protected notebook to a user using an incorrect key", func(t *testing.T) {
+		req := test.GetAPIRequest(t, "/api/notebook/protected")
+		req.Header.Add("Authorization", "Bearer incorrect_token")
 		res := httptest.NewRecorder()
 
 		server.ServeHTTP(res, req)

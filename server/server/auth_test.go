@@ -6,25 +6,21 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mayudev/notesplace/server/auth"
 	"github.com/mayudev/notesplace/server/model"
 	"github.com/mayudev/notesplace/server/server"
 	"github.com/mayudev/notesplace/server/test"
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func TestAuthenticate(t *testing.T) {
 	notebook_id := "protected"
 	password := "unsafe_password"
-	hasher := auth.Hasher{Cost: bcrypt.MinCost}
-	hashed, _ := hasher.HashPassword(password)
 
 	store := StubServerStore{
 		notebooks: map[string]model.Notebook{
 			"protected": {
 				ID:              notebook_id,
-				Password:        hashed,
+				Password:        test.HashWithDefault(password),
 				ProtectionLevel: 2,
 				CreatedAt:       time.UnixMicro(0),
 				UpdatedAt:       time.UnixMicro(0),
@@ -50,8 +46,7 @@ func TestAuthenticate(t *testing.T) {
 		body, err := ioutil.ReadAll(res.Body)
 		assert.NoError(t, err)
 
-		anIssuer := auth.NewIssuer(issuerKey)
-		valid := anIssuer.ValidateNotebook(string(body), notebook_id)
+		valid := test.ValidateWith(notebook_id, body, issuerKey)
 
 		assert.True(t, valid)
 		assert.Equal(t, 200, res.Code)

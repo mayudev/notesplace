@@ -1,6 +1,8 @@
 package server
 
 import (
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/mayudev/notesplace/server/model"
 	"github.com/mayudev/notesplace/server/util"
@@ -17,10 +19,23 @@ func (s *Server) getNotebookEndpoint(c *gin.Context) {
 		return
 	}
 
+	notebook.Password = ""
+
 	// Check if read access is required
 	if notebook.ProtectionLevel.Protected() {
-		unauthorized(c)
-		return
+		authorization := c.GetHeader("Authorization")
+		if len(authorization) == 0 {
+			unauthorized(c)
+			return
+		}
+
+		token := strings.TrimPrefix(authorization, "Bearer ")
+		valid := s.issuer.ValidateNotebook(token, id)
+
+		if !valid {
+			unauthorized(c)
+			return
+		}
 	}
 
 	c.JSON(200, notebook)

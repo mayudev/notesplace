@@ -2,13 +2,17 @@ package test
 
 import (
 	"bytes"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
 
 	jsoniter "github.com/json-iterator/go"
+	"github.com/mayudev/notesplace/server/auth"
+	"github.com/mayudev/notesplace/server/server"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func GetAPIRequest(t testing.TB, path string) *http.Request {
@@ -76,4 +80,34 @@ func AssertDeepEqual[T any](t testing.TB, got, want T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("invalid response, got %#v wanted %#v", got, want)
 	}
+}
+
+func HashWithDefault(password string) string {
+	hasher := auth.Hasher{Cost: bcrypt.MinCost}
+	hashed, _ := hasher.HashPassword(password)
+	return hashed
+}
+
+func ValidateWith(notebook string, token []byte, issuerKey string) bool {
+	issuer := auth.NewIssuer(issuerKey)
+	valid := issuer.ValidateNotebook(string(token), notebook)
+
+	return valid
+}
+
+func AuthorizeFor(t testing.TB, server *server.Server, notebook, password string) string {
+	t.Helper()
+
+	authReq := GetAPIRequest(t, "/api/auth")
+	authReq.Header.Add("Notebook", "protected")
+	authReq.Header.Add("Password", password)
+	authRes := httptest.NewRecorder()
+
+	server.ServeHTTP(authRes, authReq)
+
+	body, err := ioutil.ReadAll(authRes.Body)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, authRes.Code)
+
+	return string(body)
 }
