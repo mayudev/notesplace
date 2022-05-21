@@ -14,6 +14,7 @@ type Server struct {
 	store  *repository.Repository
 	issuer *auth.Issuer
 	hasher *auth.Hasher
+	Run    func(addr ...string) (err error)
 }
 
 type ServerOptions struct {
@@ -23,7 +24,11 @@ type ServerOptions struct {
 
 func NewServer(store repository.Store, options ServerOptions) *Server {
 	s := &Server{store: repository.NewRepository(store)}
-	s.Handler = s.setupRouter()
+
+	router := s.setupRouter()
+	s.Handler = router
+	s.Run = router.Run
+
 	s.issuer = auth.NewIssuer(options.PrivateKey)
 
 	hashingCost := bcrypt.DefaultCost
@@ -33,7 +38,6 @@ func NewServer(store repository.Store, options ServerOptions) *Server {
 	}
 
 	s.hasher = &auth.Hasher{Cost: hashingCost}
-
 	return s
 }
 
