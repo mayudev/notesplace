@@ -44,7 +44,6 @@ func (s *Server) getNoteEndpoint(c *gin.Context) {
 func (s *Server) putNoteEndpoint(c *gin.Context) {
 	var body model.Note
 
-	// todo do something with order: 0
 	if ok := bindData(c, &body); !ok {
 		badRequest(c)
 		return

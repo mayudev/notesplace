@@ -92,9 +92,14 @@ func TestUpdateNote(t *testing.T) {
 
 	t.Run("reorders notes when necessary", func(t *testing.T) {
 		note1 := store.Notes["note_1"]
-		note1.Order = 2
 
-		repo.UpdateNote(note1)
+		update := model.Note{
+			ID:         note1.ID,
+			NotebookID: note1.NotebookID,
+			Order:      2,
+		}
+
+		repo.UpdateNote(update)
 
 		assert.Equal(t, uint(2), store.Notes["note_1"].Order)
 		assert.Equal(t, uint(1), store.Notes["note_3"].Order)
@@ -103,11 +108,30 @@ func TestUpdateNote(t *testing.T) {
 
 	t.Run("reorders notes when necessary (down)", func(t *testing.T) {
 		note3 := store.Notes["note_3"]
-		note3.Order = 0
+		update := model.Note{
+			ID:         note3.ID,
+			NotebookID: note3.NotebookID,
+			Order:      0,
+		}
 
-		repo.UpdateNote(note3)
+		repo.UpdateNote(update)
 
 		assert.Equal(t, uint(0), store.Notes["note_3"].Order)
+		assert.Equal(t, uint(1), store.Notes["note_2"].Order)
+	})
+
+	t.Run("does not reorder a note if content was specified", func(t *testing.T) {
+		note2 := store.Notes["note_2"]
+		update := model.Note{
+			ID:         note2.ID,
+			NotebookID: note2.NotebookID,
+			Content:    "a",
+			Title:      "a",
+			Order:      0,
+		}
+
+		repo.UpdateNote(update)
+
 		assert.Equal(t, uint(1), store.Notes["note_2"].Order)
 	})
 }

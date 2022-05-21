@@ -27,7 +27,8 @@ func (r *Repository) UpdateNote(data model.Note) (model.Note, error) {
 		note.Title = data.Title
 	}
 
-	if data.Order != note.Order {
+	// Update Order only if Content and Title were not updated.
+	if (data.Content == "" && data.Title == "") && data.Order != note.Order {
 		count := r.store.NoteCount(data.NotebookID)
 		if data.Order >= count {
 			return model.Note{}, fmt.Errorf("incorrect order")
