@@ -44,7 +44,9 @@ func (s *Server) getNoteEndpoint(c *gin.Context) {
 func (s *Server) putNoteEndpoint(c *gin.Context) {
 	var body model.Note
 
+	// todo do something with order: 0
 	if ok := bindData(c, &body); !ok {
+		badRequest(c)
 		return
 	}
 
@@ -56,6 +58,11 @@ func (s *Server) putNoteEndpoint(c *gin.Context) {
 
 	// Find associated notebook
 	notebook, exists := s.store.GetNotebook(body.NotebookID)
+
+	if !exists {
+		notFound(c)
+		return
+	}
 
 	// Check if notebook is protected against writes
 	if notebook.ProtectionLevel.WriteProtected() {
@@ -73,6 +80,7 @@ func (s *Server) putNoteEndpoint(c *gin.Context) {
 
 		if err != nil {
 			internalServerError(c)
+			return
 		}
 
 		c.JSON(201, note)
@@ -102,6 +110,7 @@ func (s *Server) putNoteEndpoint(c *gin.Context) {
 
 	if err != nil {
 		internalServerError(c)
+		return
 	}
 
 	c.JSON(200, result)

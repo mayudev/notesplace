@@ -11,7 +11,6 @@ import (
 func (s *Server) Validate(c *gin.Context, notebook string) bool {
 	authorization := c.GetHeader("Authorization")
 	if len(authorization) == 0 {
-		unauthorized(c)
 		return false
 	}
 

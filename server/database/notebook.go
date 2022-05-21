@@ -32,7 +32,7 @@ func (d *Database) CreateNotebook(id string, protection auth.ProtectionLevel, ha
 	(id, title, password, protection_level, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5, $6)`
 
-	_, err := d.conn.Exec(ctx, query, id, "TODO", "", 0, time.Now().UTC(), time.Now().UTC())
+	_, err := d.conn.Exec(ctx, query, id, "TODO", hash, protection, time.Now().UTC(), time.Now().UTC())
 
 	if err != nil {
 		return err
