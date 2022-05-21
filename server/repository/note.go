@@ -42,7 +42,7 @@ func (r *Repository) UpdateNote(data model.Note) (model.Note, error) {
 					return model.Note{}, fmt.Errorf("note not found")
 				}
 				existing.Order--
-				r.store.UpdateNote(existing)
+				r.store.UpdateNote(&existing)
 			}
 		} else {
 			// Note has been moved __down__
@@ -52,7 +52,7 @@ func (r *Repository) UpdateNote(data model.Note) (model.Note, error) {
 					return model.Note{}, fmt.Errorf("note not found")
 				}
 				existing.Order++
-				r.store.UpdateNote(existing)
+				r.store.UpdateNote(&existing)
 
 				// prevent overflow
 				if i == 0 {
@@ -63,7 +63,7 @@ func (r *Repository) UpdateNote(data model.Note) (model.Note, error) {
 		note.Order = data.Order
 	}
 
-	return r.store.UpdateNote(*note)
+	return r.store.UpdateNote(note)
 }
 
 func (r *Repository) CreateNote(data *model.Note) (*model.Note, error) {
@@ -97,7 +97,7 @@ func (r *Repository) DeleteNote(data *model.Note) error {
 			continue
 		}
 		note.Order--
-		r.store.UpdateNote(note)
+		r.store.UpdateNote(&note)
 	}
 
 	return r.store.DeleteNote(data.ID)

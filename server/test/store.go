@@ -82,8 +82,8 @@ func (store *StubServerStore) GetNoteByOrder(notebook string, order uint) (model
 	return model.Note{}, false
 }
 
-func (store *StubServerStore) UpdateNote(data model.Note) (model.Note, error) {
-	store.Notes[data.ID] = data
+func (store *StubServerStore) UpdateNote(data *model.Note) (model.Note, error) {
+	store.Notes[data.ID] = *data
 
 	return store.Notes[data.ID], nil
 }

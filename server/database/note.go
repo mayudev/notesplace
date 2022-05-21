@@ -39,7 +39,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7)`
 	return nil
 }
 
-func (d *Database) UpdateNote(data model.Note) (model.Note, error) {
+func (d *Database) UpdateNote(data *model.Note) (model.Note, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

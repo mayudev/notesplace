@@ -104,7 +104,7 @@ func TestNote(t *testing.T) {
 			Content:    "New content 1",
 		}
 
-		_, err := DB.UpdateNote(update)
+		_, err := DB.UpdateNote(&update)
 		assert.NoError(t, err)
 
 		got, err := DB.GetNote(validNote1)
