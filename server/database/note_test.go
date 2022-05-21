@@ -22,6 +22,11 @@ func TestNote(t *testing.T) {
 	DB.CreateNotebook(testing1, auth.ProtectionLevel(0), "")
 	DB.CreateNotebook(testing2, auth.ProtectionLevel(0), "")
 
+	t.Run("returns valid note count when there are no notes", func(t *testing.T) {
+		count := DB.NoteCount(testing1)
+		assert.Equal(t, uint(0), count)
+	})
+
 	t.Run("creates a note", func(t *testing.T) {
 		note := model.Note{
 			ID:         validNote1,
@@ -50,6 +55,39 @@ func TestNote(t *testing.T) {
 		}
 
 		test.AssertDeepEqual(t, got, want)
+	})
+
+	t.Run("find the note by order", func(t *testing.T) {
+		got, exists := DB.GetNoteByOrder(testing1, 0)
+		assert.True(t, exists)
+
+		want := model.Note{
+			ID:         validNote1,
+			NotebookID: testing1,
+			Title:      "Notebook title 1",
+			Order:      0,
+			Content:    "Notebook content 1",
+			CreatedAt:  got.CreatedAt,
+			UpdatedAt:  got.UpdatedAt,
+		}
+
+		test.AssertDeepEqual(t, got, want)
+	})
+
+	t.Run("returns valid note count with two notes", func(t *testing.T) {
+		note := model.Note{
+			ID:         validNote2,
+			NotebookID: testing1,
+			Title:      "Notebook title 2",
+			Order:      1,
+			Content:    "Notebook content 2",
+		}
+
+		err := DB.CreateNote(&note)
+		assert.NoError(t, err)
+
+		count := DB.NoteCount(testing1)
+		assert.Equal(t, uint(2), count)
 	})
 
 	t.Run("does not find a note that doesn't exist", func(t *testing.T) {
