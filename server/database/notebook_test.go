@@ -30,10 +30,10 @@ func TestNotebook(t *testing.T) {
 	})
 
 	t.Run("returns previously created notebook", func(t *testing.T) {
-		got, exists := DB.GetNotebook(notebookID)
-		assert.True(t, exists)
+		got, err := DB.GetNotebook(notebookID)
+		assert.NoError(t, err)
 
-		want := model.Notebook{
+		want := &model.Notebook{
 			ID:              notebookID,
 			Name:            "TODO", // TODO name handling kek
 			Password:        "",
@@ -51,8 +51,8 @@ func TestNotebook(t *testing.T) {
 	})
 
 	t.Run("returns an error when a notebook doesn't exist", func(t *testing.T) {
-		_, exists := DB.GetNotebook(notebookID)
-		assert.False(t, exists)
+		_, err := DB.GetNotebook(notebookID)
+		assert.Error(t, err)
 	})
 
 	t.Run("returns an error when trying to delete a notebook that doesn't exist", func(t *testing.T) {

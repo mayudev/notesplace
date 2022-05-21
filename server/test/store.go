@@ -1,10 +1,12 @@
 package test
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/mayudev/notesplace/server/auth"
 	"github.com/mayudev/notesplace/server/model"
+	"github.com/mayudev/notesplace/server/util"
 )
 
 type StubServerStore struct {
@@ -19,14 +21,14 @@ func NewStubServerStore() *StubServerStore {
 	return &store
 }
 
-func (store *StubServerStore) GetNotebook(id string) (model.Notebook, bool) {
+func (store *StubServerStore) GetNotebook(id string) (*model.Notebook, error) {
 	value, ok := store.Notebooks[id]
 
 	if !ok {
-		return model.Notebook{}, false
+		return nil, fmt.Errorf(util.ErrorItemNotFound)
 	}
 
-	return value, true
+	return &value, nil
 }
 
 func (store *StubServerStore) CreateNotebook(id string, protection auth.ProtectionLevel, hash string) error {

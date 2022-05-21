@@ -15,9 +15,9 @@ func (s *Server) authenticateEndpoint(c *gin.Context) {
 		return
 	}
 
-	notebook, exists := s.store.GetNotebook(id)
+	notebook, err := s.store.GetNotebook(id)
 
-	if !exists {
+	if err != nil {
 		notFound(c)
 		return
 	}

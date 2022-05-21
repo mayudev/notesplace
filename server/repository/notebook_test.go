@@ -22,16 +22,16 @@ func TestGetNotebook(t *testing.T) {
 	repo := repository.NewRepository(&store)
 
 	t.Run("find an existing notebook", func(t *testing.T) {
-		got, exists := repo.GetNotebook("noteboook")
+		got, err := repo.GetNotebook("noteboook")
 
 		assert.Equal(t, got.ID, "noteboook")
-		assert.True(t, exists)
+		assert.NoError(t, err)
 	})
 
 	t.Run("returns false on a notebook that does not exist", func(t *testing.T) {
-		_, exists := repo.GetNotebook("other")
+		_, err := repo.GetNotebook("other")
 
-		assert.False(t, exists)
+		assert.Error(t, err)
 	})
 }
 
@@ -71,7 +71,7 @@ func TestDeleteNotebook(t *testing.T) {
 		err := repo.DeleteNotebook("notebook")
 		assert.NoError(t, err)
 
-		_, exists := repo.GetNotebook("notebook")
-		assert.False(t, exists)
+		_, err = repo.GetNotebook("notebook")
+		assert.Error(t, err)
 	})
 }

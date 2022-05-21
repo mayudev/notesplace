@@ -7,7 +7,7 @@ import (
 
 type Store interface {
 	// Notebook
-	GetNotebook(id string) (model.Notebook, bool)
+	GetNotebook(id string) (*model.Notebook, error)
 	CreateNotebook(id string, protection auth.ProtectionLevel, hash string) error
 	DeleteNotebook(id string) error
 

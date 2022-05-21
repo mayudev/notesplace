@@ -9,7 +9,7 @@ import (
 	"github.com/mayudev/notesplace/server/model"
 )
 
-func (d *Database) GetNotebook(id string) (model.Notebook, bool) {
+func (d *Database) GetNotebook(id string) (*model.Notebook, error) {
 	notebook := new(model.Notebook)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -17,10 +17,10 @@ func (d *Database) GetNotebook(id string) (model.Notebook, bool) {
 
 	err := d.conn.QueryRow(ctx, "SELECT id, title, password, protection_level, created_at, updated_at FROM notesplace.notebooks WHERE id = $1", id).Scan(&notebook.ID, &notebook.Name, &notebook.Password, &notebook.ProtectionLevel, &notebook.CreatedAt, &notebook.UpdatedAt)
 	if err != nil {
-		return model.Notebook{}, false
+		return nil, err
 	}
 
-	return *notebook, true
+	return notebook, nil
 }
 
 // TODO proper error handling, title

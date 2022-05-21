@@ -19,9 +19,9 @@ func (s *Server) getNoteEndpoint(c *gin.Context) {
 	}
 
 	// Fetch notebook
-	notebook, exists := s.store.GetNotebook(note.NotebookID)
+	notebook, err := s.store.GetNotebook(note.NotebookID)
 
-	if !exists {
+	if err != nil {
 		notFound(c)
 		return
 	}
@@ -56,9 +56,9 @@ func (s *Server) putNoteEndpoint(c *gin.Context) {
 	}
 
 	// Find associated notebook
-	notebook, exists := s.store.GetNotebook(body.NotebookID)
+	notebook, err := s.store.GetNotebook(body.NotebookID)
 
-	if !exists {
+	if err != nil {
 		notFound(c)
 		return
 	}
@@ -127,8 +127,8 @@ func (s *Server) deleteNoteEndpoint(c *gin.Context) {
 	}
 
 	// Fetch notebook
-	notebook, exists := s.store.GetNotebook(note.NotebookID)
-	if !exists {
+	notebook, err := s.store.GetNotebook(note.NotebookID)
+	if err != nil {
 		notFound(c)
 		return
 	}

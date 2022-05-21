@@ -10,9 +10,9 @@ import (
 
 func (s *Server) getNotebookEndpoint(c *gin.Context) {
 	id := c.Param("id")
-	notebook, exists := s.store.GetNotebook(id)
+	notebook, err := s.store.GetNotebook(id)
 
-	if !exists {
+	if err != nil {
 		notFound(c)
 		return
 	}
@@ -75,9 +75,9 @@ func (s *Server) createNotebookEndpoint(c *gin.Context) {
 
 func (s *Server) deleteNotebookEndpoint(c *gin.Context) {
 	id := c.Param("id")
-	notebook, exists := s.store.GetNotebook(id)
+	notebook, err := s.store.GetNotebook(id)
 
-	if !exists {
+	if err != nil {
 		notFound(c)
 		return
 	}
