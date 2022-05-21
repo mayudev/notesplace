@@ -72,14 +72,14 @@ func (store *StubServerStore) GetNote(id string) (*model.Note, error) {
 	return &value, nil
 }
 
-func (store *StubServerStore) GetNoteByOrder(notebook string, order uint) (model.Note, bool) {
+func (store *StubServerStore) GetNoteByOrder(notebook string, order uint) (*model.Note, error) {
 	for _, v := range store.Notes {
 		if v.Order == order {
-			return v, true
+			return &v, nil
 		}
 	}
 
-	return model.Note{}, false
+	return nil, fmt.Errorf(util.ErrorItemNotFound)
 }
 
 func (store *StubServerStore) UpdateNote(data *model.Note) (model.Note, error) {

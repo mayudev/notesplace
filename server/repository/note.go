@@ -37,22 +37,22 @@ func (r *Repository) UpdateNote(data model.Note) (model.Note, error) {
 		if data.Order > note.Order {
 			// Note has been moved __up__
 			for i := note.Order + 1; i <= data.Order; i++ {
-				existing, exists := r.store.GetNoteByOrder(data.NotebookID, i)
-				if !exists {
+				existing, err := r.store.GetNoteByOrder(data.NotebookID, i)
+				if err != nil {
 					return model.Note{}, fmt.Errorf("note not found")
 				}
 				existing.Order--
-				r.store.UpdateNote(&existing)
+				r.store.UpdateNote(existing)
 			}
 		} else {
 			// Note has been moved __down__
 			for i := note.Order - 1; i >= data.Order; i-- {
-				existing, exists := r.store.GetNoteByOrder(data.NotebookID, i)
-				if !exists { // corrupted notebook uh oh
+				existing, err := r.store.GetNoteByOrder(data.NotebookID, i)
+				if err != nil { // corrupted notebook uh oh
 					return model.Note{}, fmt.Errorf("note not found")
 				}
 				existing.Order++
-				r.store.UpdateNote(&existing)
+				r.store.UpdateNote(existing)
 
 				// prevent overflow
 				if i == 0 {
@@ -92,12 +92,12 @@ func (r *Repository) DeleteNote(data *model.Note) error {
 	count := r.store.NoteCount(data.NotebookID)
 
 	for i := data.Order; i < count; i++ {
-		note, exists := r.store.GetNoteByOrder(data.NotebookID, i)
-		if !exists {
+		note, err := r.store.GetNoteByOrder(data.NotebookID, i)
+		if err != nil {
 			continue
 		}
 		note.Order--
-		r.store.UpdateNote(&note)
+		r.store.UpdateNote(note)
 	}
 
 	return r.store.DeleteNote(data.ID)

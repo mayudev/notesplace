@@ -58,10 +58,10 @@ func TestNote(t *testing.T) {
 	})
 
 	t.Run("find the note by order", func(t *testing.T) {
-		got, exists := DB.GetNoteByOrder(testing1, 0)
-		assert.True(t, exists)
+		got, err := DB.GetNoteByOrder(testing1, 0)
+		assert.NoError(t, err)
 
-		want := model.Note{
+		want := &model.Note{
 			ID:         validNote1,
 			NotebookID: testing1,
 			Title:      "Notebook title 1",

@@ -73,7 +73,7 @@ func (d *Database) DeleteNote(id string) error {
 	return nil
 }
 
-func (d *Database) GetNoteByOrder(notebook string, order uint) (model.Note, bool) {
+func (d *Database) GetNoteByOrder(notebook string, order uint) (*model.Note, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -81,10 +81,10 @@ func (d *Database) GetNoteByOrder(notebook string, order uint) (model.Note, bool
 
 	err := d.conn.QueryRow(ctx, "SELECT id, notebook_id, title, \"order\", content, created_at, updated_at FROM notesplace.notes WHERE \"order\" = $1 AND notebook_id = $2", order, notebook).Scan(&note.ID, &note.NotebookID, &note.Title, &note.Order, &note.Content, &note.CreatedAt, &note.UpdatedAt)
 	if err != nil {
-		return model.Note{}, false
+		return nil, err
 	}
 
-	return *note, true
+	return note, nil
 }
 
 func (d *Database) NoteCount(notebook string) uint {

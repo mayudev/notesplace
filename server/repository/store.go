@@ -18,6 +18,6 @@ type Store interface {
 	DeleteNote(id string) error
 
 	// Internal
-	GetNoteByOrder(notebook string, order uint) (model.Note, bool)
+	GetNoteByOrder(notebook string, order uint) (*model.Note, error)
 	NoteCount(notebook string) uint
 }
