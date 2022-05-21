@@ -41,10 +41,10 @@ func TestNote(t *testing.T) {
 	})
 
 	t.Run("find a note", func(t *testing.T) {
-		got, exists := DB.GetNote(validNote1)
-		assert.True(t, exists)
+		got, err := DB.GetNote(validNote1)
+		assert.NoError(t, err)
 
-		want := model.Note{
+		want := &model.Note{
 			ID:         validNote1,
 			NotebookID: testing1,
 			Title:      "Notebook title 1",
@@ -91,8 +91,8 @@ func TestNote(t *testing.T) {
 	})
 
 	t.Run("does not find a note that doesn't exist", func(t *testing.T) {
-		_, exists := DB.GetNote("whatever")
-		assert.False(t, exists)
+		_, err := DB.GetNote("whatever")
+		assert.Error(t, err)
 	})
 
 	t.Run("updates a note", func(t *testing.T) {
@@ -107,10 +107,10 @@ func TestNote(t *testing.T) {
 		_, err := DB.UpdateNote(update)
 		assert.NoError(t, err)
 
-		got, exists := DB.GetNote(validNote1)
-		assert.True(t, exists)
+		got, err := DB.GetNote(validNote1)
+		assert.NoError(t, err)
 
-		want := model.Note{
+		want := &model.Note{
 			ID:         validNote1,
 			NotebookID: testing1,
 			Title:      "New title 1",
@@ -127,7 +127,7 @@ func TestNote(t *testing.T) {
 		err := DB.DeleteNote(validNote1)
 		assert.NoError(t, err)
 
-		_, exists := DB.GetNote(validNote1)
-		assert.False(t, exists)
+		_, err = DB.GetNote(validNote1)
+		assert.Error(t, err)
 	})
 }

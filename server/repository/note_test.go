@@ -21,16 +21,16 @@ func TestGetNote(t *testing.T) {
 	repo := repository.NewRepository(&store)
 
 	t.Run("find an existing note", func(t *testing.T) {
-		got, exists := repo.GetNote("note")
+		got, err := repo.GetNote("note")
 
 		assert.Equal(t, got.ID, "note")
-		assert.True(t, exists)
+		assert.NoError(t, err)
 	})
 
-	t.Run("returns false on a note that does not exist", func(t *testing.T) {
-		_, exists := repo.GetNote("other")
+	t.Run("returns an error on a note that does not exist", func(t *testing.T) {
+		_, got := repo.GetNote("other")
 
-		assert.False(t, exists)
+		assert.Error(t, got)
 	})
 }
 
@@ -210,10 +210,10 @@ func TestDeleteNote(t *testing.T) {
 	repo := repository.NewRepository(&store)
 
 	t.Run("deletes a note and reorders other notes accordingly", func(t *testing.T) {
-		note2, exists := repo.GetNote("note_2")
-		assert.True(t, exists)
+		note2, err := repo.GetNote("note_2")
+		assert.NoError(t, err)
 
-		err := repo.DeleteNote(&note2)
+		err = repo.DeleteNote(note2)
 		assert.NoError(t, err)
 
 		assert.Equal(t, uint(0), store.Notes["note_1"].Order)

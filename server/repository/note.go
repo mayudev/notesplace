@@ -8,15 +8,15 @@ import (
 	"github.com/mayudev/notesplace/server/util"
 )
 
-func (r *Repository) GetNote(id string) (model.Note, bool) {
+func (r *Repository) GetNote(id string) (*model.Note, error) {
 	return r.store.GetNote(id)
 }
 
 func (r *Repository) UpdateNote(data model.Note) (model.Note, error) {
-	note, ok := r.store.GetNote(data.ID)
+	note, err := r.store.GetNote(data.ID)
 
-	if !ok {
-		return model.Note{}, fmt.Errorf("note not found")
+	if err != nil {
+		return model.Note{}, err
 	}
 
 	if data.Content != "" {
@@ -63,7 +63,7 @@ func (r *Repository) UpdateNote(data model.Note) (model.Note, error) {
 		note.Order = data.Order
 	}
 
-	return r.store.UpdateNote(note)
+	return r.store.UpdateNote(*note)
 }
 
 func (r *Repository) CreateNote(data *model.Note) (*model.Note, error) {

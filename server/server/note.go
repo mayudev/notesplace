@@ -11,9 +11,9 @@ import (
 func (s *Server) getNoteEndpoint(c *gin.Context) {
 	id := c.Param("id")
 
-	note, exists := s.store.GetNote(id)
+	note, err := s.store.GetNote(id)
 
-	if !exists {
+	if err != nil {
 		notFound(c)
 		return
 	}
@@ -87,9 +87,9 @@ func (s *Server) putNoteEndpoint(c *gin.Context) {
 	}
 
 	// Try to find note in database
-	note, exists := s.store.GetNote(body.ID)
+	note, err := s.store.GetNote(body.ID)
 
-	if !exists {
+	if err != nil {
 		notFound(c)
 		return
 	}
@@ -119,9 +119,9 @@ func (s *Server) deleteNoteEndpoint(c *gin.Context) {
 	id := c.Param("id")
 
 	// TODO DRY
-	note, exists := s.store.GetNote(id)
+	note, err := s.store.GetNote(id)
 
-	if !exists {
+	if err != nil {
 		notFound(c)
 		return
 	}
@@ -143,7 +143,7 @@ func (s *Server) deleteNoteEndpoint(c *gin.Context) {
 		}
 	}
 
-	s.store.DeleteNote(&note)
+	s.store.DeleteNote(note)
 	c.String(200, "Ok")
 	return
 }

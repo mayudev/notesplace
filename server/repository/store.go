@@ -12,7 +12,7 @@ type Store interface {
 	DeleteNotebook(id string) error
 
 	// Note
-	GetNote(id string) (model.Note, bool)
+	GetNote(id string) (*model.Note, error)
 	CreateNote(data *model.Note) error
 	UpdateNote(data model.Note) (model.Note, error)
 	DeleteNote(id string) error
