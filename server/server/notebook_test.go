@@ -36,6 +36,35 @@ func TestNotebookGet(t *testing.T) {
 				UpdatedAt:       time.UnixMicro(0),
 			},
 		},
+		Notes: map[string]model.Note{
+			"note_0": {
+				ID:         "note_0",
+				NotebookID: "1",
+				Title:      "Note 0",
+				Order:      0,
+				Content:    "Content",
+				CreatedAt:  time.UnixMicro(0),
+				UpdatedAt:  time.UnixMicro(0),
+			},
+			"note_1": {
+				ID:         "note_1",
+				NotebookID: "1",
+				Title:      "Note 1",
+				Order:      1,
+				Content:    "Content",
+				CreatedAt:  time.UnixMicro(0),
+				UpdatedAt:  time.UnixMicro(0),
+			},
+			"note_2": {
+				ID:         "note_2",
+				NotebookID: "1",
+				Title:      "Note 2",
+				Order:      2,
+				Content:    "Content",
+				CreatedAt:  time.UnixMicro(0),
+				UpdatedAt:  time.UnixMicro(0),
+			},
+		},
 	}
 
 	key := "unsafe_key"
@@ -58,6 +87,11 @@ func TestNotebookGet(t *testing.T) {
 			ProtectionLevel: 0,
 			CreatedAt:       time.UnixMicro(0),
 			UpdatedAt:       time.UnixMicro(0),
+			Notes: []model.Note{
+				store.Notes["note_0"],
+				store.Notes["note_1"],
+				store.Notes["note_2"],
+			},
 		}
 
 		got := test.DecodeJson[model.Notebook](t, res)

@@ -29,6 +29,15 @@ func (s *Server) getNotebookEndpoint(c *gin.Context) {
 		}
 	}
 
+	// Insert all notes
+	notes, err := s.store.GetNotesByNotebook(id)
+	if err != nil {
+		internalServerError(c)
+		return
+	}
+
+	notebook.Notes = notes
+
 	c.JSON(200, notebook)
 }
 

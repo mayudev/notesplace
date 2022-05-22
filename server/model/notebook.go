@@ -40,4 +40,8 @@ type Notebook struct {
 	//
 	// Required.
 	UpdatedAt time.Time `json:"updated_at"`
+	// Notes
+	//
+	// Optional.
+	Notes []Note `json:"notes"`
 }
