@@ -2,9 +2,9 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/mayudev/notesplace/server/model"
 	"github.com/mayudev/notesplace/server/util"
-	"github.com/mayudev/notesplace/server/util/yeast"
 	"github.com/mayudev/notesplace/server/validation"
 )
 
@@ -69,8 +69,12 @@ func (s *Server) createNotebookEndpoint(c *gin.Context) {
 		password = hash
 	}
 
-	// TODO replace with a different id generator
-	id := yeast.Generate()
+	id, err := gonanoid.New(12)
+	if err != nil {
+		internalServerError(c)
+		return
+	}
+
 	s.store.CreateNotebook(id, "test", req.ProtectionLevel, password)
 
 	c.JSON(200, model.NotebookCreateResponse{
