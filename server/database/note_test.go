@@ -104,7 +104,7 @@ func TestNote(t *testing.T) {
 			Content:    "New content 1",
 		}
 
-		_, err := DB.UpdateNote(&update)
+		result, err := DB.UpdateNote(&update)
 		assert.NoError(t, err)
 
 		got, err := DB.GetNote(validNote1)
@@ -121,6 +121,7 @@ func TestNote(t *testing.T) {
 		}
 
 		test.AssertDeepEqual(t, got, want)
+		test.AssertDeepEqual(t, &result, want)
 	})
 
 	t.Run("deletes a note", func(t *testing.T) {

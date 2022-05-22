@@ -52,8 +52,12 @@ WHERE id = $1`
 		return model.Note{}, err
 	}
 
-	// TODO
-	return model.Note{}, err
+	note, err := d.GetNote(data.ID)
+	if err != nil {
+		return model.Note{}, err
+	}
+
+	return *note, err
 }
 
 func (d *Database) DeleteNote(id string) error {

@@ -6,7 +6,7 @@ import (
 )
 
 type NotebookCreate struct {
-	// Name of the notebook. Optional.
+	// Name of the notebook.
 	Name string `json:"name"`
 	// Protection level.
 	//
