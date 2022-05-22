@@ -60,6 +60,7 @@ func (s *Server) createNotebookEndpoint(c *gin.Context) {
 		password = hash
 	}
 
+	// TODO replace with a different id generator
 	id := yeast.Generate()
 	s.store.CreateNotebook(id, "test", req.ProtectionLevel, password)
 

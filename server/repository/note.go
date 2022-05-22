@@ -12,6 +12,10 @@ func (r *Repository) GetNote(id string) (*model.Note, error) {
 	return r.store.GetNote(id)
 }
 
+func (r *Repository) GetNotesByNotebook(id string) ([]model.Note, error) {
+	return r.store.GetNotesByNotebook(id)
+}
+
 func (r *Repository) UpdateNote(data model.Note) (model.Note, error) {
 	note, err := r.store.GetNote(data.ID)
 

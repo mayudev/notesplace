@@ -22,6 +22,31 @@ func (d *Database) GetNote(id string) (*model.Note, error) {
 	return note, nil
 }
 
+func (d *Database) GetNotesByNotebook(id string) ([]model.Note, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	rows, err := d.conn.Query(ctx, "SELECT id, notebook_id, title, \"order\", content, created_at, updated_at FROM notesplace.notes WHERE notebook_id = $1", id)
+	if err != nil {
+		return []model.Note{}, err
+	}
+
+	var result []model.Note
+
+	for rows.Next() {
+		note := model.Note{}
+
+		err := rows.Scan(&note.ID, &note.NotebookID, &note.Title, &note.Order, &note.Content, &note.CreatedAt, &note.UpdatedAt)
+		if err != nil {
+			fmt.Println(err)
+			return []model.Note{}, err
+		}
+
+		result = append(result, note)
+	}
+	return result, nil
+}
+
 func (d *Database) CreateNote(data *model.Note) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

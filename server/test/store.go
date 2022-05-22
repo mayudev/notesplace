@@ -72,6 +72,18 @@ func (store *StubServerStore) GetNote(id string) (*model.Note, error) {
 	return &value, nil
 }
 
+func (store *StubServerStore) GetNotesByNotebook(id string) ([]model.Note, error) {
+	var notes []model.Note
+
+	for _, v := range store.Notes {
+		if v.NotebookID == id {
+			notes = append(notes, v)
+		}
+	}
+
+	return notes, nil
+}
+
 func (store *StubServerStore) GetNoteByOrder(notebook string, order uint) (*model.Note, error) {
 	for _, v := range store.Notes {
 		if v.Order == order {

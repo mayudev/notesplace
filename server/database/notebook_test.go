@@ -14,11 +14,12 @@ var DB *database.Database
 
 func TestMain(m *testing.M) {
 	DB = database.NewDatabase("postgres://postgres:secret@localhost:5432/testing")
+	defer func() {
+		DB.Cleanup()
+		DB.Close()
+	}()
 
 	m.Run()
-
-	DB.Cleanup()
-	DB.Close()
 }
 
 func TestNotebook(t *testing.T) {

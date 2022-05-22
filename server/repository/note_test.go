@@ -34,6 +34,43 @@ func TestGetNote(t *testing.T) {
 	})
 }
 
+func TestGetNotesByNotebook(t *testing.T) {
+	store := test.StubServerStore{
+		Notebooks: map[string]model.Notebook{
+			"noteboook": {
+				ID: "noteboook",
+			},
+		},
+		Notes: map[string]model.Note{
+			"note1": {
+				ID:         "note1",
+				NotebookID: "notebook",
+			},
+			"note2": {
+				ID:         "note2",
+				NotebookID: "notebook",
+			},
+			"note3": {
+				ID:         "note3",
+				NotebookID: "notebook",
+			},
+		},
+	}
+
+	repo := repository.NewRepository(&store)
+
+	t.Run("returns all notes in a notebook", func(t *testing.T) {
+		got, err := repo.GetNotesByNotebook("notebook")
+		assert.NoError(t, err)
+
+		assert.Len(t, got, 3)
+
+		assert.Equal(t, "note1", got[0].ID)
+		assert.Equal(t, "note2", got[1].ID)
+		assert.Equal(t, "note3", got[2].ID)
+	})
+}
+
 func TestUpdateNote(t *testing.T) {
 	store := test.StubServerStore{
 		Notebooks: map[string]model.Notebook{

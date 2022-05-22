@@ -13,6 +13,7 @@ type Store interface {
 
 	// Note
 	GetNote(id string) (*model.Note, error)
+	GetNotesByNotebook(id string) ([]model.Note, error)
 	CreateNote(payload *model.Note) error
 	UpdateNote(payload *model.Note) (model.Note, error)
 	DeleteNote(id string) error

@@ -5,6 +5,7 @@ import (
 
 	"github.com/mayudev/notesplace/server/auth"
 	"github.com/mayudev/notesplace/server/model"
+	"github.com/mayudev/notesplace/server/repository"
 	"github.com/mayudev/notesplace/server/test"
 	"github.com/mayudev/notesplace/server/util"
 	"github.com/stretchr/testify/assert"
@@ -12,7 +13,6 @@ import (
 
 func TestNote(t *testing.T) {
 	testing1 := "testing_1"
-	testing2 := "testing_2"
 
 	validNote1 := util.GenerateID().String()
 	validNote2 := util.GenerateID().String()
@@ -20,7 +20,10 @@ func TestNote(t *testing.T) {
 	assert.NotEqual(t, validNote1, validNote2)
 
 	DB.CreateNotebook(testing1, "testing 1", auth.ProtectionLevel(0), "")
-	DB.CreateNotebook(testing2, "testing 2", auth.ProtectionLevel(0), "")
+
+	t.Run("implements repository.Store", func(t *testing.T) {
+		var _ repository.Store = DB
+	})
 
 	t.Run("returns valid note count when there are no notes", func(t *testing.T) {
 		count := DB.NoteCount(testing1)
@@ -130,5 +133,66 @@ func TestNote(t *testing.T) {
 
 		_, err = DB.GetNote(validNote1)
 		assert.Error(t, err)
+	})
+}
+
+func TestReorder(t *testing.T) {
+	testing2 := "testing_2"
+
+	validNote1 := util.GenerateID().String()
+	validNote2 := util.GenerateID().String()
+	validNote3 := util.GenerateID().String()
+
+	DB.CreateNotebook(testing2, "testing 2", auth.ProtectionLevel(0), "")
+
+	t.Run("creates notes", func(t *testing.T) {
+		note1 := model.Note{
+			ID:         validNote1,
+			NotebookID: testing2,
+			Title:      "Notebook title 1",
+			Order:      0,
+			Content:    "Notebook content 1",
+		}
+
+		err := DB.CreateNote(&note1)
+		assert.NoError(t, err)
+
+		note2 := model.Note{
+			ID:         validNote2,
+			NotebookID: testing2,
+			Title:      "Notebook title 2",
+			Order:      1,
+			Content:    "Notebook content 2",
+		}
+
+		err = DB.CreateNote(&note2)
+		assert.NoError(t, err)
+
+		note3 := model.Note{
+			ID:         validNote3,
+			NotebookID: testing2,
+			Title:      "Notebook title 3",
+			Order:      2,
+			Content:    "Notebook content 3",
+		}
+
+		err = DB.CreateNote(&note3)
+		assert.NoError(t, err)
+	})
+
+	t.Run("returns valid note count", func(t *testing.T) {
+		count := DB.NoteCount(testing2)
+		assert.Equal(t, uint(3), count)
+	})
+
+	t.Run("returns all notes in the notebook", func(t *testing.T) {
+		notes, err := DB.GetNotesByNotebook(testing2)
+		assert.NoError(t, err)
+
+		assert.Len(t, notes, 3)
+
+		assert.Equal(t, validNote1, notes[0].ID)
+		assert.Equal(t, validNote2, notes[1].ID)
+		assert.Equal(t, validNote3, notes[2].ID)
 	})
 }
