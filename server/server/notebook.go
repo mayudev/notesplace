@@ -75,7 +75,7 @@ func (s *Server) createNotebookEndpoint(c *gin.Context) {
 		return
 	}
 
-	s.store.CreateNotebook(id, "test", req.ProtectionLevel, password)
+	s.store.CreateNotebook(id, req.Name, req.ProtectionLevel, password)
 
 	c.JSON(200, model.NotebookCreateResponse{
 		ID: id,

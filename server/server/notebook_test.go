@@ -203,6 +203,9 @@ func TestCreateNotebook(t *testing.T) {
 
 		assert.Equal(t, 200, res.Code)
 		test.AssertDeepEqual(t, got, want)
+
+		notebook, _ := store.GetNotebook(got.ID)
+		assert.Equal(t, "new notebook", notebook.Name)
 	})
 
 	t.Run("does not allow to create a notebook with incorrect protection level", func(t *testing.T) {
