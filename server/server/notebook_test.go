@@ -64,6 +64,15 @@ func TestNotebookGet(t *testing.T) {
 				CreatedAt:  time.UnixMicro(0),
 				UpdatedAt:  time.UnixMicro(0),
 			},
+			"different_notebook_note": {
+				ID:         "different_notebook_note",
+				NotebookID: "not_1",
+				Title:      "Note 0",
+				Order:      0,
+				Content:    "Content",
+				CreatedAt:  time.UnixMicro(0),
+				UpdatedAt:  time.UnixMicro(0),
+			},
 		},
 	}
 
@@ -87,17 +96,20 @@ func TestNotebookGet(t *testing.T) {
 			ProtectionLevel: 0,
 			CreatedAt:       time.UnixMicro(0),
 			UpdatedAt:       time.UnixMicro(0),
-			Notes: []model.Note{
-				store.Notes["note_0"],
-				store.Notes["note_1"],
-				store.Notes["note_2"],
-			},
 		}
 
 		got := test.DecodeJson[model.Notebook](t, res)
 
+		gotNotes := got.Notes
+		got.Notes = nil
+
 		assert.Equal(t, 200, res.Code)
 		test.AssertDeepEqual(t, got, want)
+
+		assert.Contains(t, gotNotes, store.Notes["note_0"])
+		assert.Contains(t, gotNotes, store.Notes["note_1"])
+		assert.Contains(t, gotNotes, store.Notes["note_2"])
+		assert.NotContains(t, gotNotes, store.Notes["different_notebook_note"])
 	})
 
 	t.Run("does not return information about a protected notebook to an unauthorized user", func(t *testing.T) {
