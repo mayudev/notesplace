@@ -25,7 +25,7 @@ func TestNotebook(t *testing.T) {
 	notebookID := "testing_notebook1"
 
 	t.Run("creates a notebook", func(t *testing.T) {
-		err := DB.CreateNotebook(notebookID, auth.ProtectionLevel(0), "")
+		err := DB.CreateNotebook(notebookID, "name", auth.ProtectionLevel(0), "password")
 		assert.NoError(t, err)
 	})
 
@@ -35,8 +35,8 @@ func TestNotebook(t *testing.T) {
 
 		want := &model.Notebook{
 			ID:              notebookID,
-			Name:            "TODO", // TODO name handling kek
-			Password:        "",
+			Name:            "name",
+			Password:        "password",
 			ProtectionLevel: 0,
 			CreatedAt:       got.CreatedAt,
 			UpdatedAt:       got.UpdatedAt,

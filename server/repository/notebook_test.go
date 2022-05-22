@@ -47,7 +47,7 @@ func TestCreateNotebook(t *testing.T) {
 	repo := repository.NewRepository(&store)
 
 	t.Run("creates a new notebook", func(t *testing.T) {
-		err := repo.CreateNotebook("new", 1, "")
+		err := repo.CreateNotebook("new", "test", 1, "")
 		assert.NoError(t, err)
 
 		assert.Equal(t, "new", store.Notebooks["new"].ID)

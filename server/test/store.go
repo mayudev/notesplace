@@ -31,10 +31,10 @@ func (store *StubServerStore) GetNotebook(id string) (*model.Notebook, error) {
 	return &value, nil
 }
 
-func (store *StubServerStore) CreateNotebook(id string, protection auth.ProtectionLevel, hash string) error {
+func (store *StubServerStore) CreateNotebook(id string, name string, protection auth.ProtectionLevel, hash string) error {
 	store.Notebooks[id] = model.Notebook{
 		ID:              id,
-		Name:            id,
+		Name:            name,
 		Password:        hash,
 		ProtectionLevel: protection,
 		CreatedAt:       time.Now(),

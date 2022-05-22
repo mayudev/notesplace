@@ -9,8 +9,8 @@ func (r *Repository) GetNotebook(id string) (*model.Notebook, error) {
 	return r.store.GetNotebook(id)
 }
 
-func (r *Repository) CreateNotebook(id string, protection auth.ProtectionLevel, hash string) error {
-	return r.store.CreateNotebook(id, protection, hash)
+func (r *Repository) CreateNotebook(id string, name string, protection auth.ProtectionLevel, hash string) error {
+	return r.store.CreateNotebook(id, name, protection, hash)
 }
 
 func (r *Repository) DeleteNotebook(id string) error {

@@ -19,8 +19,8 @@ func TestNote(t *testing.T) {
 
 	assert.NotEqual(t, validNote1, validNote2)
 
-	DB.CreateNotebook(testing1, auth.ProtectionLevel(0), "")
-	DB.CreateNotebook(testing2, auth.ProtectionLevel(0), "")
+	DB.CreateNotebook(testing1, "testing 1", auth.ProtectionLevel(0), "")
+	DB.CreateNotebook(testing2, "testing 2", auth.ProtectionLevel(0), "")
 
 	t.Run("returns valid note count when there are no notes", func(t *testing.T) {
 		count := DB.NoteCount(testing1)
