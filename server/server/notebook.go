@@ -93,8 +93,7 @@ func (s *Server) deleteNotebookEndpoint(c *gin.Context) {
 
 	}
 
-	// TODO delete all notes
-
+	// Deleting all notes will be handled by the database
 	s.store.DeleteNotebook(id)
 	c.String(200, "Ok")
 	return

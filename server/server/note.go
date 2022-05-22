@@ -118,7 +118,6 @@ func (s *Server) putNoteEndpoint(c *gin.Context) {
 func (s *Server) deleteNoteEndpoint(c *gin.Context) {
 	id := c.Param("id")
 
-	// TODO DRY
 	note, err := s.store.GetNote(id)
 
 	if err != nil {
