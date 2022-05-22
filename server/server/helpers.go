@@ -8,7 +8,6 @@ import (
 // bindData binds data
 func bindData[T any](c *gin.Context, data T) bool {
 	if err := c.ShouldBindJSON(&data); err != nil {
-		badRequest(c)
 		return false
 	}
 
