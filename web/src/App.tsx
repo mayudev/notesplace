@@ -10,11 +10,15 @@ const GlobalStyle = createGlobalStyle`
   body {
     background: ${BackgroundColor};
     color: ${ForegroundColor};
+
+    transition: background var(--transition-theme), color var(--transition-theme);
   }
 
   :root {
-    --bg:  ${BackgroundColor};;
+    --bg:  ${BackgroundColor};
     --fg: ${ForegroundColor};
+
+    --transition-theme: 0.4s;
   }
 `
 

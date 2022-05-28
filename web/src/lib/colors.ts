@@ -5,8 +5,13 @@ export const BackgroundColor = theme('mode', {
   dark: '#18191a',
 })
 
-export const BackgroundSecondary = theme('mode', {
+export const BackgroundNavbar = theme('mode', {
   light: '#ffffff',
+  dark: '#242526',
+})
+
+export const BackgroundSecondary = theme('mode', {
+  light: '#ebedf0',
   dark: '#242526',
 })
 
