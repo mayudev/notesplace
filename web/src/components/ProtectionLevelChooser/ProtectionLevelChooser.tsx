@@ -1,10 +1,5 @@
+import { ProtectionLevel } from '../../features/notebook/notebook.slice'
 import { Form, Radio } from './ProtectionLevelChooser.styles'
-
-export enum ProtectionLevel {
-  None,
-  ReadOnly,
-  Protected,
-}
 
 export default function ProtectionLevelChooser({
   level,

@@ -53,5 +53,6 @@
     "@types/styled-components": "^5.1.25",
     "@types/styled-theming": "^2.2.5",
     "prettier": "^2.6.2"
-  }
+  },
+  "proxy": "http://localhost:8080"
 }

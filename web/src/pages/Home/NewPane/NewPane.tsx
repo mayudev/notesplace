@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useAppDispatch } from '../../../app/hooks'
 import Button from '../../../components/Button/Button'
 import {
   ButtonContainer,
@@ -7,17 +8,32 @@ import {
   PaneHeading,
   PaneSubheading,
 } from '../../../components/Panes/Panes'
-import ProtectionLevelChooser, {
+import ProtectionLevelChooser from '../../../components/ProtectionLevelChooser/ProtectionLevelChooser'
+import {
+  createNotebook,
   ProtectionLevel,
-} from '../../../components/ProtectionLevelChooser/ProtectionLevelChooser'
+} from '../../../features/notebook/notebook.slice'
 
 export default function NewPane() {
+  const dispatch = useAppDispatch()
+
   const [level, setLevel] = useState(ProtectionLevel.None)
-  const [title, setTitle] = useState('')
+  const [name, setName] = useState('')
   const [password, setPassword] = useState('')
 
-  const isEnabled = title.length > 0 && (level === 0 || password.length > 0)
+  const isEnabled = name.length > 0 && (level === 0 || password.length > 0)
 
+  const create = () => {
+    if (!isEnabled) return
+
+    dispatch(
+      createNotebook({
+        name,
+        protectionLevel: level,
+        password,
+      })
+    )
+  }
   return (
     <div>
       <PaneHeading>Create a new notebook</PaneHeading>
@@ -29,8 +45,8 @@ export default function NewPane() {
           maxLength={256}
           placeholder="Name your notebook..."
           type="text"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
+          value={name}
+          onChange={e => setName(e.target.value)}
         />
         <ProtectionLevelChooser level={level} onChoose={n => setLevel(n)} />
         {level !== 0 && (
@@ -44,7 +60,9 @@ export default function NewPane() {
         )}
       </Container>
       <ButtonContainer>
-        <Button disabled={!isEnabled}>Create</Button>
+        <Button disabled={!isEnabled} onClick={create}>
+          Create
+        </Button>
       </ButtonContainer>
     </div>
   )
