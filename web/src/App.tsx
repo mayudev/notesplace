@@ -4,8 +4,8 @@ import { createGlobalStyle, ThemeProvider } from 'styled-components'
 import { useAppDispatch, useAppSelector } from './app/hooks'
 import { applyTheme, selectTheme } from './features/global/global.slice'
 import { BackgroundColor, ForegroundColor } from './lib/colors'
-import Home from './pages/home/Home'
-import Notebook from './pages/notebook/Notebook'
+import Home from './pages/Home/Home'
+import Notebook from './pages/Notebook/Notebook'
 
 const GlobalStyle = createGlobalStyle`
   body {

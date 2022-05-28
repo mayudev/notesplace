@@ -19,3 +19,8 @@ export const ForegroundColor = theme('mode', {
   light: '#222427',
   dark: '#f5f6f7',
 })
+
+export const Accent = theme('mode', {
+  light: '#1c7ed6',
+  dark: '#5facec',
+})
