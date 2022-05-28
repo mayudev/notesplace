@@ -1,5 +1,9 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Notebook, NotebookCreateResponse } from './notebook.types'
+import {
+  createAsyncThunk,
+  createEntityAdapter,
+  createSlice,
+} from '@reduxjs/toolkit'
+import { Note, Notebook, NotebookCreateResponse } from './notebook.types'
 
 export enum ProtectionLevel {
   None,
@@ -7,17 +11,12 @@ export enum ProtectionLevel {
   Protected,
 }
 
-interface NotebookState {
-  id: string
-  name: string | null
-  protectionLevel: ProtectionLevel
-  createdAt: string | null
-  updatedAt: string | null
+interface NotebookState extends Omit<Notebook, 'notes'> {
   status: string
   error: string | undefined
 }
 
-const initialState: NotebookState = {
+/* const initialState = {
   id: '',
   name: '',
   protectionLevel: ProtectionLevel.None,
@@ -25,7 +24,19 @@ const initialState: NotebookState = {
   updatedAt: null,
   status: 'idle',
   error: undefined,
-}
+} */
+
+const notebookAdapter = createEntityAdapter<Note>()
+
+const initialState = notebookAdapter.getInitialState<NotebookState>({
+  id: '',
+  name: '',
+  protectionLevel: ProtectionLevel.None,
+  createdAt: null,
+  updatedAt: null,
+  status: 'idle',
+  error: undefined,
+})
 
 export const createNotebook = createAsyncThunk(
   'notebook/createNotebook',
@@ -77,19 +88,6 @@ const notebookSlice = createSlice({
   extraReducers(builder) {
     builder
 
-      // notebook/createNotebook
-      /* .addCase(createNotebook.pending, (state, action) => {
-        state.status = 'loading'
-      })
-      .addCase(createNotebook.fulfilled, (state, action) => {
-        state.status = 'succeeded'
-        state.id = action.payload.id
-      })
-      .addCase(createNotebook.rejected, (state, action) => {
-        state.status = 'failed'
-        state.error = action.error.message
-      }) */
-
       // notebook/fetchNotebook
       .addCase(fetchNotebook.pending, (state, action) => {
         state.status = 'loading'
@@ -97,10 +95,14 @@ const notebookSlice = createSlice({
       .addCase(fetchNotebook.fulfilled, (state, action) => {
         state.status = 'succeeded'
         state.id = action.payload.id
-        state.name = action.payload.name
+        state.name = action.payload.name!
         state.protectionLevel = action.payload.protectionLevel
         state.createdAt = action.payload.createdAt
         state.updatedAt = action.payload.updatedAt
+
+        if (action.payload.notes) {
+          notebookAdapter.upsertMany(state, action.payload.notes)
+        }
       })
       .addCase(fetchNotebook.rejected, (state, action) => {
         state.status = 'failed'
