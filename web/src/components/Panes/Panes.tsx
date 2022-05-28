@@ -3,7 +3,7 @@ import { BackgroundSecondary } from '../../lib/colors'
 
 export const Container = styled.div`
   max-width: 350px;
-  margin: auto;
+  margin: 1rem auto;
 `
 
 export const PaneHeading = styled.p`
@@ -29,7 +29,6 @@ export const Input = styled.input`
   width: 100%;
 
   padding: 12px;
-  margin: 1rem auto;
   box-sizing: border-box;
 
   border-radius: 6px;

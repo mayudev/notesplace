@@ -1,4 +1,4 @@
-import { Radio } from './ProtectionLevelChooser.styles'
+import { Form, Radio } from './ProtectionLevelChooser.styles'
 
 export enum ProtectionLevel {
   None,
@@ -20,7 +20,7 @@ export default function ProtectionLevelChooser({
   ]
 
   return (
-    <form>
+    <Form>
       {labels.map((label, i) => (
         <Radio key={i}>
           <input
@@ -32,6 +32,6 @@ export default function ProtectionLevelChooser({
           <span>{label}</span>
         </Radio>
       ))}
-    </form>
+    </Form>
   )
 }

@@ -1,6 +1,10 @@
 import styled from 'styled-components'
 import { Accent } from '../../lib/colors'
 
+export const Form = styled.form`
+  margin: 0.5rem 0;
+`
+
 export const Radio = styled.label`
   display: block;
   cursor: pointer;
