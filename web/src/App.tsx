@@ -1,7 +1,8 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { createGlobalStyle, ThemeProvider } from 'styled-components'
-import { useAppSelector } from './app/hooks'
-import { selectTheme } from './features/global/global.slice'
+import { useAppDispatch, useAppSelector } from './app/hooks'
+import { applyTheme, selectTheme } from './features/global/global.slice'
 import { BackgroundColor, ForegroundColor } from './lib/colors'
 import Home from './pages/home/Home'
 import Notebook from './pages/notebook/Notebook'
@@ -24,6 +25,17 @@ const GlobalStyle = createGlobalStyle`
 
 function App() {
   const theme = useAppSelector(selectTheme)
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    // Apply current theme
+    const currentTheme = localStorage.getItem('theme')
+
+    // Check if currentTheme is valid
+    if (currentTheme === 'light' || currentTheme === 'dark') {
+      dispatch(applyTheme(currentTheme))
+    }
+  }, [])
 
   return (
     <ThemeProvider theme={{ mode: theme }}>

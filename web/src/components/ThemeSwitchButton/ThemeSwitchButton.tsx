@@ -20,7 +20,11 @@ export default function ThemeSwitchButton() {
   const themeSwitch = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light'
 
+    // Update the store
     dispatch(applyTheme(newTheme))
+
+    // Save in localStorage for later use
+    localStorage.setItem('theme', newTheme)
   }
 
   return (
