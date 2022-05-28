@@ -35,6 +35,9 @@ export const Center = styled.div`
 export const Panes = styled.section`
   display: grid;
   grid-template-columns: 50% 50%;
+
+  max-width: 1080px;
+  margin: auto;
 `
 
 export const Pane = styled.div``

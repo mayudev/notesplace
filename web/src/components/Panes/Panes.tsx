@@ -1,6 +1,11 @@
 import styled from 'styled-components'
 import { BackgroundSecondary } from '../../lib/colors'
 
+export const Container = styled.div`
+  max-width: 350px;
+  margin: auto;
+`
+
 export const PaneHeading = styled.p`
   margin: 0;
   font-weight: 300;
@@ -24,11 +29,13 @@ export const Input = styled.input`
   width: 100%;
 
   padding: 12px;
-  max-width: 350px;
   margin: 1rem auto;
+  box-sizing: border-box;
 
   border-radius: 6px;
   background: ${BackgroundSecondary};
+
+  transition: background var(--transition-theme);
 `
 
 export const ButtonContainer = styled.div`

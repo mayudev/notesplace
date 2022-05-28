@@ -1,6 +1,7 @@
 import Button from '../../../components/Button/Button'
 import {
   ButtonContainer,
+  Container,
   Input,
   PaneHeading,
   PaneSubheading,
@@ -13,7 +14,9 @@ export default function JoinPane() {
       <PaneSubheading>
         Just enter the URL or the ID you received!
       </PaneSubheading>
-      <Input placeholder="Existing notebook URL or ID" type="text" />
+      <Container>
+        <Input placeholder="Existing notebook URL or ID" type="text" />
+      </Container>
       <ButtonContainer>
         <Button>Enter</Button>
       </ButtonContainer>
