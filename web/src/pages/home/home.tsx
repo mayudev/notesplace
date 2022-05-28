@@ -17,6 +17,7 @@ export default function Home() {
 
   return (
     <div>
+      <h1>notesplace</h1>
       <h1>Home page! {theme}</h1>
       <button onClick={themeSwitch}>
         turn the lights {theme === 'light' ? 'off' : 'on'}
