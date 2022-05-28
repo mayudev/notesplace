@@ -13,6 +13,10 @@ import ProtectionLevelChooser, {
 
 export default function NewPane() {
   const [level, setLevel] = useState(ProtectionLevel.None)
+  const [title, setTitle] = useState('')
+  const [password, setPassword] = useState('')
+
+  const isEnabled = title.length > 0 && (level === 0 || password.length > 0)
 
   return (
     <div>
@@ -25,6 +29,8 @@ export default function NewPane() {
           maxLength={256}
           placeholder="Name your notebook..."
           type="text"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
         />
         <ProtectionLevelChooser level={level} onChoose={n => setLevel(n)} />
         {level !== 0 && (
@@ -32,11 +38,13 @@ export default function NewPane() {
             maxLength={512}
             placeholder="Input password..."
             type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
           />
         )}
       </Container>
       <ButtonContainer>
-        <Button>Create</Button>
+        <Button disabled={!isEnabled}>Create</Button>
       </ButtonContainer>
     </div>
   )

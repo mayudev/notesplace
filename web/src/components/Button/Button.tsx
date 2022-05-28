@@ -21,13 +21,19 @@ const Button = styled.button<Props>`
   &:active,
   &:focus {
     outline: none;
+    text-decoration: underline;
   }
 
-  transition: background 0.2s ease-in;
+  transition: background 0.2s ease-in, color 0.1s ease-in;
   cursor: pointer;
 
   &:hover {
     background: ${BackgroundSecondary};
+  }
+
+  &:disabled {
+    cursor: default;
+    color: gray;
   }
 `
 
