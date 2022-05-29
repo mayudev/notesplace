@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useAppDispatch } from '../../../app/hooks'
+import { useSelector } from 'react-redux'
+import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import Button from '../../../components/Button/Button'
 import {
   ButtonContainer,
@@ -17,23 +18,26 @@ import {
 export default function NewPane() {
   const dispatch = useAppDispatch()
 
+  const currentId = useAppSelector(state => state.notebook.id)
+
   const [level, setLevel] = useState(ProtectionLevel.None)
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
 
   const isEnabled = name.length > 0 && (level === 0 || password.length > 0)
 
-  const create = () => {
+  const create = async () => {
     if (!isEnabled) return
 
-    dispatch(
+    await dispatch(
       createNotebook({
         name,
         protectionLevel: level,
         password,
       })
-    )
+    ).unwrap()
   }
+
   return (
     <div>
       <PaneHeading>Create a new notebook</PaneHeading>

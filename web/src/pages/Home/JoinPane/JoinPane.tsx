@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useAppDispatch } from '../../../app/hooks'
+import { useNavigate } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import Button from '../../../components/Button/Button'
 import {
   ButtonContainer,
@@ -12,17 +13,24 @@ import { fetchNotebook } from '../../../features/notebook/notebook.slice'
 
 export default function JoinPane() {
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+
+  const currentId = useAppSelector(state => state.notebook.status)
 
   const [query, setQuery] = useState('')
 
-  const load = () => {
+  const load = async () => {
     // TODO input validation, url checking
-    dispatch(
+    const result = await dispatch(
       fetchNotebook({
         id: query,
         jwt: '',
       })
-    )
+    ).unwrap()
+
+    navigate('/nb/' + result.id)
+
+    // TODO redirect to next page
   }
 
   return (
@@ -42,6 +50,7 @@ export default function JoinPane() {
       <ButtonContainer>
         <Button onClick={load}>Enter</Button>
       </ButtonContainer>
+      {currentId}
     </div>
   )
 }

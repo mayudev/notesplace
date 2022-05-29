@@ -3,6 +3,7 @@ import {
   createEntityAdapter,
   createSlice,
 } from '@reduxjs/toolkit'
+import { RootState } from '../../app/store'
 import { Note, Notebook, NotebookCreateResponse } from './notebook.types'
 
 export enum ProtectionLevel {
@@ -15,16 +16,6 @@ interface NotebookState extends Omit<Notebook, 'notes'> {
   status: string
   error: string | undefined
 }
-
-/* const initialState = {
-  id: '',
-  name: '',
-  protectionLevel: ProtectionLevel.None,
-  createdAt: null,
-  updatedAt: null,
-  status: 'idle',
-  error: undefined,
-} */
 
 const notebookAdapter = createEntityAdapter<Note>()
 
@@ -61,6 +52,10 @@ export const createNotebook = createAsyncThunk(
       }),
     })
 
+    if (!response.ok) {
+      throw response.status
+    }
+
     const data = (await response.json()) as NotebookCreateResponse
     dispatch(fetchNotebook({ id: data.id!, jwt: '' }))
   }
@@ -71,6 +66,11 @@ export const fetchNotebook = createAsyncThunk(
   async ({ id, jwt }: { id: string; jwt: string | null }) => {
     // TODO Authorization
     const response = await fetch('/api/notebook/' + id)
+
+    if (!response.ok) {
+      throw response.status
+    }
+
     const data = await response.json()
 
     data.protectionLevel = data.protection_level
@@ -87,7 +87,10 @@ const notebookSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
-
+      .addCase(createNotebook.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
       // notebook/fetchNotebook
       .addCase(fetchNotebook.pending, (state, action) => {
         state.status = 'loading'
@@ -106,8 +109,16 @@ const notebookSlice = createSlice({
       })
       .addCase(fetchNotebook.rejected, (state, action) => {
         state.status = 'failed'
+        state.error = action.error.message
       })
   },
 })
 
+export const selectNotebookId = (state: RootState): string => state.notebook.id
+
+export const selectNotebookData = (state: RootState): Notebook => {
+  const notebook = state.notebook
+  const { ids, entities, status, error, ...rest } = notebook
+  return rest as Notebook
+}
 export default notebookSlice.reducer
