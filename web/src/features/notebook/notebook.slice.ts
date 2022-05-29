@@ -2,6 +2,7 @@ import {
   createAsyncThunk,
   createEntityAdapter,
   createSlice,
+  SerializedError,
 } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 import { Note, Notebook, NotebookCreateResponse } from './notebook.types'
@@ -41,7 +42,7 @@ export const createNotebook = createAsyncThunk(
       protectionLevel: ProtectionLevel
       password: string | null
     },
-    { dispatch }
+    { dispatch, rejectWithValue }
   ) => {
     const response = await fetch('/api/notebook', {
       method: 'POST',
@@ -52,32 +53,52 @@ export const createNotebook = createAsyncThunk(
       }),
     })
 
+    const data = (await response.json()) as NotebookCreateResponse
+
     if (!response.ok) {
-      throw response.status
+      const error: SerializedError = {
+        code: response.status.toString(),
+        message: data.message,
+      }
+
+      throw error
     }
 
-    const data = (await response.json()) as NotebookCreateResponse
-    dispatch(fetchNotebook({ id: data.id!, jwt: '' }))
+    await dispatch(fetchNotebook({ id: data.id!, jwt: '' })).unwrap()
+    return data
   }
 )
 
 export const fetchNotebook = createAsyncThunk(
   'notebook/fetchNotebook',
-  async ({ id, jwt }: { id: string; jwt: string | null }) => {
+  async (
+    { id, jwt }: { id: string; jwt: string | null },
+    { rejectWithValue }
+  ) => {
     // TODO Authorization
-    const response = await fetch('/api/notebook/' + id)
+    try {
+      const response = await fetch('/api/notebook/' + id)
 
-    if (!response.ok) {
-      throw response.status
+      const data = await response.json()
+
+      if (!response.ok) {
+        const error: SerializedError = {
+          code: response.status.toString(),
+          message: data.message,
+        }
+
+        throw error
+      }
+
+      data.protectionLevel = data.protection_level
+      data.createdAt = data.created_at
+      data.updatedAt = data.updated_at
+
+      return data as Notebook
+    } catch (e: unknown) {
+      const err = e as SerializedError
+      return rejectWithValue(err)
     }
-
-    const data = await response.json()
-
-    data.protectionLevel = data.protection_level
-    data.createdAt = data.created_at
-    data.updatedAt = data.updated_at
-
-    return data as Notebook
   }
 )
 

@@ -29,8 +29,6 @@ export default function JoinPane() {
     ).unwrap()
 
     navigate('/nb/' + result.id)
-
-    // TODO redirect to next page
   }
 
   return (

@@ -1,6 +1,7 @@
+import { SerializedError } from '@reduxjs/toolkit'
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useAppDispatch, useAppSelector } from '../../../app/hooks'
+import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from '../../../app/hooks'
 import Button from '../../../components/Button/Button'
 import {
   ButtonContainer,
@@ -17,8 +18,7 @@ import {
 
 export default function NewPane() {
   const dispatch = useAppDispatch()
-
-  const currentId = useAppSelector(state => state.notebook.id)
+  const navigate = useNavigate()
 
   const [level, setLevel] = useState(ProtectionLevel.None)
   const [name, setName] = useState('')
@@ -29,13 +29,21 @@ export default function NewPane() {
   const create = async () => {
     if (!isEnabled) return
 
-    await dispatch(
-      createNotebook({
-        name,
-        protectionLevel: level,
-        password,
-      })
-    ).unwrap()
+    try {
+      const result = await dispatch(
+        createNotebook({
+          name,
+          protectionLevel: level,
+          password,
+        })
+      ).unwrap()
+
+      navigate('/nb/' + result.id)
+    } catch (e: unknown) {
+      const err = e as SerializedError
+      console.log(err.message)
+      // TODO error handling
+    }
   }
 
   return (
