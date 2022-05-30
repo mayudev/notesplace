@@ -13,8 +13,10 @@ export enum ProtectionLevel {
   Protected,
 }
 
+export type Status = 'idle' | 'pending' | 'succeeded' | 'failed'
+
 interface NotebookState extends Omit<Notebook, 'notes'> {
-  status: string
+  status: Status
   error: string | undefined
 }
 
@@ -114,7 +116,7 @@ const notebookSlice = createSlice({
       })
       // notebook/fetchNotebook
       .addCase(fetchNotebook.pending, (state, action) => {
-        state.status = 'loading'
+        state.status = 'pending'
       })
       .addCase(fetchNotebook.fulfilled, (state, action) => {
         state.status = 'succeeded'
