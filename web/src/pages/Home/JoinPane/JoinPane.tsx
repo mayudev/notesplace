@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../../app/hooks'
 import Button from '../../../components/Button/Button'
+import PaneError from '../../../components/Panes/PaneError'
 import {
   ButtonContainer,
   Container,
@@ -10,7 +11,6 @@ import {
   PaneHeading,
   PaneSubheading,
 } from '../../../components/Panes/Panes'
-import PasswordPrompt from '../../../components/PasswordPrompt/PasswordPrompt'
 import { fetchNotebook } from '../../../features/notebook/notebook.slice'
 
 export default function JoinPane() {
@@ -18,7 +18,25 @@ export default function JoinPane() {
   const navigate = useNavigate()
 
   const [query, setQuery] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [errorVisible, setErrorVisible] = useState(false)
+
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
+
+  // Show an error and hide it after a few seconds
+  const showError = (message: string) => {
+    setErrorMessage(message)
+    setErrorVisible(true)
+
+    setTimeout(() => {
+      setErrorVisible(false)
+    }, 2000)
+
+    // This is just as stupid as I am!
+    setTimeout(() => {
+      setErrorMessage('')
+    }, 2400)
+  }
 
   const load = async () => {
     // TODO input validation, url checking
@@ -40,7 +58,7 @@ export default function JoinPane() {
           alert('unauthorized')
           break
         case '404':
-          alert('not found')
+          showError('Notebook not found')
           break
         default:
           alert('unknown error: ' + err.code)
@@ -69,7 +87,7 @@ export default function JoinPane() {
       <ButtonContainer>
         <Button onClick={load}>Enter</Button>
       </ButtonContainer>
-      {showPasswordPrompt && <PasswordPrompt onSubmit={passwordEntered} />}
+      <PaneError visible={errorVisible} message={errorMessage} />
     </div>
   )
 }

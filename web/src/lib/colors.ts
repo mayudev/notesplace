@@ -24,3 +24,8 @@ export const Accent = theme('mode', {
   light: '#1c7ed6',
   dark: '#5facec',
 })
+
+export const Error = theme('mode', {
+  light: '#ec5f5f',
+  dark: '#e87979',
+})

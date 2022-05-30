@@ -1,5 +1,34 @@
-import styled from 'styled-components'
+import { TransitionStatus } from 'react-transition-group'
+import styled, { keyframes } from 'styled-components'
 import { BackgroundSecondary } from '../../lib/colors'
+
+const BlinkAnimation = keyframes`
+  from {
+    opacity: 0;
+    color: inherit;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  70% {
+    color: var(--color-error)
+  }
+
+  to {
+    color: inherit;
+  }
+`
+
+export const Blink = styled.div<{ state: TransitionStatus }>`
+  text-align: center;
+  padding: 12px;
+
+  transition: 0.3s ease-out;
+  animation: ${BlinkAnimation} 1s linear;
+  opacity: ${({ state }) => (state === 'exiting' ? 0 : 1)};
+`
 
 export const Container = styled.div`
   max-width: 350px;

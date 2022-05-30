@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { createGlobalStyle, ThemeProvider } from 'styled-components'
 import { useAppDispatch, useAppSelector } from './app/hooks'
 import { applyTheme, selectTheme } from './features/global/global.slice'
-import { BackgroundColor, ForegroundColor } from './lib/colors'
+import { BackgroundColor, Error, ForegroundColor } from './lib/colors'
 import Home from './pages/Home/Home'
 import Notebook from './pages/Notebook/Notebook'
 
@@ -18,6 +18,8 @@ const GlobalStyle = createGlobalStyle`
   :root {
     --bg:  ${BackgroundColor};
     --fg: ${ForegroundColor};
+
+    --color-error: ${Error};
 
     --transition-theme: 0.4s;
   }
