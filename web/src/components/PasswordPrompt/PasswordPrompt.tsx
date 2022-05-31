@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CSSTransition } from 'react-transition-group'
 import { useAppDispatch } from '../../app/hooks'
 import { authenticate } from '../../features/global/global.slice'
@@ -20,9 +20,14 @@ type Props = {
 
 export default function PasswordPrompt(props: Props) {
   const dispatch = useAppDispatch()
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [password, setPassword] = useState('')
   const [incorrect, setIncorrect] = useState(false)
+
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
 
   const close = () => {
     props.onSubmit(false, '')
@@ -81,6 +86,7 @@ export default function PasswordPrompt(props: Props) {
         </IncorrectMessage>
         <Input
           type="password"
+          ref={inputRef}
           value={password}
           onChange={e => setPassword(e.target.value)}
           onKeyDown={captureKey}

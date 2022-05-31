@@ -12,10 +12,7 @@ import {
   PaneSubheading,
 } from '../../../components/Panes/Panes'
 import PasswordPrompt from '../../../components/PasswordPrompt/PasswordPrompt'
-import {
-  authenticate,
-  selectToken,
-} from '../../../features/global/global.slice'
+import { selectToken } from '../../../features/global/global.slice'
 import { fetchNotebook } from '../../../features/notebook/notebook.slice'
 
 export default function JoinPane() {
@@ -81,6 +78,17 @@ export default function JoinPane() {
     load(token)
   }
 
+  const submit = () => {
+    load(token)
+  }
+
+  const captureKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      // Submit on return key pressed
+      submit()
+    }
+  }
+
   return (
     <div>
       <PaneHeading>Open notebook</PaneHeading>
@@ -91,12 +99,13 @@ export default function JoinPane() {
         <Input
           value={query}
           onChange={e => setQuery(e.target.value)}
+          onKeyDown={captureKey}
           placeholder="Existing notebook URL or ID"
           type="text"
         />
       </Container>
       <ButtonContainer>
-        <Button onClick={() => load(token)}>Enter</Button>
+        <Button onClick={submit}>Enter</Button>
       </ButtonContainer>
       <PaneError visible={errorVisible} message={errorMessage} />
       {showPasswordPrompt && (
