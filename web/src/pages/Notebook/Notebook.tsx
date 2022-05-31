@@ -1,10 +1,12 @@
 import { SerializedError } from '@reduxjs/toolkit'
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import PasswordPrompt from '../../components/PasswordPrompt/PasswordPrompt'
 import Spinner from '../../components/Spinner/Spinner'
+import { applyTheme, clearToken } from '../../features/global/global.slice'
 import {
+  clearNotebook,
   fetchNotebook,
   selectNotebookData,
 } from '../../features/notebook/notebook.slice'
@@ -18,6 +20,7 @@ type Params = {
 
 export default function Notebook() {
   let params = useParams<Params>()
+  const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
   const notebook = useAppSelector(selectNotebookData)
@@ -68,6 +71,15 @@ export default function Notebook() {
     fetchData(params.id!, token)
   }
 
+  const logout = () => {
+    // CLear the token
+    dispatch(clearToken())
+    dispatch(clearNotebook())
+
+    // Redirect to home page
+    navigate('/')
+  }
+
   const display = () => {
     switch (status) {
       case 'failed':
@@ -91,7 +103,7 @@ export default function Notebook() {
 
   return (
     <>
-      <Layout />
+      <Layout onClose={logout} />
       {display()}
     </>
   )

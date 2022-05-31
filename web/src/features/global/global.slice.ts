@@ -48,6 +48,9 @@ const globalSlice = createSlice({
     applyTheme(state, action: PayloadAction<AppTheme>) {
       state.theme = action.payload
     },
+    clearToken(state) {
+      state.token = ''
+    },
   },
   extraReducers(builder) {
     builder.addCase(authenticate.fulfilled, (state, action) => {
@@ -56,7 +59,7 @@ const globalSlice = createSlice({
   },
 })
 
-export const { applyTheme } = globalSlice.actions
+export const { applyTheme, clearToken } = globalSlice.actions
 
 export const selectTheme = (state: RootState) => state.global.theme
 export const selectToken = (state: RootState) => state.global.token

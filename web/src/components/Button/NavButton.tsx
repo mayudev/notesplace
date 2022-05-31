@@ -1,12 +1,7 @@
 import styled from 'styled-components'
 import { BackgroundSecondary } from '../../lib/colors'
 
-export const Container = styled.div`
-  width: 2rem;
-  height: 2rem;
-`
-
-export const Button = styled.button`
+export const NavButton = styled.button`
   all: unset;
   font: inherit;
 
@@ -14,8 +9,8 @@ export const Button = styled.button`
   align-items: center;
   justify-content: center;
 
-  width: 100%;
-  height: 100%;
+  width: 2rem;
+  height: 2rem;
 
   border-radius: 50%;
   transition: background var(--transition-theme);

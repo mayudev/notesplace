@@ -144,7 +144,11 @@ export const fetchNotebook = createAsyncThunk(
 const notebookSlice = createSlice({
   name: 'notebook',
   initialState,
-  reducers: {},
+  reducers: {
+    clearNotebook: state => {
+      state.id = ''
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(createNotebook.rejected, (state, action) => {
@@ -181,4 +185,7 @@ export const selectNotebookData = (state: RootState): Notebook => {
   const { ids, entities, status, error, ...rest } = notebook
   return rest as Notebook
 }
+
+export const { clearNotebook } = notebookSlice.actions
+
 export default notebookSlice.reducer

@@ -2,7 +2,7 @@ import { faLightbulb, faMoon } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { applyTheme, selectTheme } from '../../features/global/global.slice'
-import { Button, Container } from './ThemeSwitchButton.styles'
+import { NavButton } from '../Button/NavButton'
 
 function Icon({ theme }: { theme: string }) {
   if (theme === 'light') {
@@ -28,14 +28,12 @@ export default function ThemeSwitchButton() {
   }
 
   return (
-    <Container>
-      <Button
-        onClick={themeSwitch}
-        title="Switch between dark and light mode"
-        aria-label="Switch between dark and light mode"
-      >
-        <Icon theme={theme} />
-      </Button>
-    </Container>
+    <NavButton
+      onClick={themeSwitch}
+      title="Switch between dark and light mode"
+      aria-label="Switch between dark and light mode"
+    >
+      <Icon theme={theme} />
+    </NavButton>
   )
 }
