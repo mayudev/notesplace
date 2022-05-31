@@ -46,7 +46,8 @@ export default function JoinPane() {
   }
 
   const load = async (token: string) => {
-    // TODO input validation, url checking
+    if (query.length === 0) return
+
     try {
       const result = await dispatch(
         fetchNotebook({
@@ -67,26 +68,17 @@ export default function JoinPane() {
           showError('Notebook not found')
           break
         default:
-          alert('unknown error: ' + err.code)
+          showError('An unknown error occurred.')
       }
     }
   }
 
-  const passwordEntered = async (success: boolean, password: string) => {
+  const passwordEntered = async (success: boolean, token: string) => {
     setShowPasswordPrompt(false)
 
     if (!success) return
 
-    const auth = await dispatch(
-      authenticate({
-        notebook: query,
-        password: password,
-      })
-    ).unwrap()
-
-    if (auth.success) {
-      load(auth.token)
-    }
+    load(token)
   }
 
   return (
@@ -107,7 +99,9 @@ export default function JoinPane() {
         <Button onClick={() => load(token)}>Enter</Button>
       </ButtonContainer>
       <PaneError visible={errorVisible} message={errorMessage} />
-      {showPasswordPrompt && <PasswordPrompt onSubmit={passwordEntered} />}
+      {showPasswordPrompt && (
+        <PasswordPrompt notebook={query} onSubmit={passwordEntered} />
+      )}
     </div>
   )
 }
