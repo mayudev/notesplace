@@ -1,0 +1,17 @@
+services:
+
+  postgres:
+    image: postgres:alpine
+
+    environment:
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=notesplace
+
+    ports:
+      - 5432:5432
+
+    env_file:
+      - .env
+
+    volumes:
+      - ./db-data/:/var/lib/postgresql/data/
