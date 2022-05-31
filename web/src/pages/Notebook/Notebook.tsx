@@ -2,11 +2,13 @@ import { SerializedError } from '@reduxjs/toolkit'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import Spinner from '../../components/Spinner/Spinner'
 import {
   fetchNotebook,
   selectNotebookData,
 } from '../../features/notebook/notebook.slice'
 import Layout from './Layout/Layout'
+import { Center } from './Notebook.styles'
 import NotebookError from './NotebookError/NotebookError'
 
 type Params = {
@@ -62,7 +64,11 @@ export default function Notebook() {
       case 'failed':
         return <NotebookError>{errorMessage}</NotebookError>
       case 'pending':
-        return <div>loading</div>
+        return (
+          <Center>
+            <Spinner width={50} borderWidth={5} primary />
+          </Center>
+        )
       case 'idle':
       case 'succeeded':
         return <div>name: {notebook.name}</div>

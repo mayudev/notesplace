@@ -3,7 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { PropsWithChildren } from 'react'
 import { Link } from 'react-router-dom'
 import Button from '../../../components/Button/Button'
-import { Center, Message } from './NotebookError.styles'
+import { Center } from '../Notebook.styles'
+import { Message } from './NotebookError.styles'
 
 export default function NotebookError({ children }: PropsWithChildren<{}>) {
   return (
