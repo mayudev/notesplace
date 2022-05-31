@@ -5,6 +5,7 @@ import {
   SerializedError,
 } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
+import { authenticate } from '../global/global.slice'
 import { Note, Notebook, NotebookCreateResponse } from './notebook.types'
 
 export enum ProtectionLevel {
@@ -32,6 +33,9 @@ const initialState = notebookAdapter.getInitialState<NotebookState>({
   error: undefined,
 })
 
+/**
+ * Creates a notebook, logins to it if necessary and returns its details.
+ */
 export const createNotebook = createAsyncThunk(
   'notebook/createNotebook',
   async (
@@ -46,6 +50,7 @@ export const createNotebook = createAsyncThunk(
     },
     { dispatch, rejectWithValue }
   ) => {
+    // Create the notebook
     const response = await fetch('/api/notebook', {
       method: 'POST',
       body: JSON.stringify({
@@ -56,7 +61,7 @@ export const createNotebook = createAsyncThunk(
     })
 
     const data = (await response.json()) as NotebookCreateResponse
-
+    // Check for errors in notebook creation step (rare)
     if (!response.ok) {
       const error: SerializedError = {
         code: response.status.toString(),
@@ -66,11 +71,39 @@ export const createNotebook = createAsyncThunk(
       throw error
     }
 
-    await dispatch(fetchNotebook({ id: data.id!, jwt: '' })).unwrap()
+    // Attempt to authenticate
+    let token = ''
+
+    if (password && protectionLevel > 0) {
+      const auth = await dispatch(
+        authenticate({
+          notebook: data.id!,
+          password: password,
+        })
+      ).unwrap()
+
+      if (!auth.success) {
+        // TODO do it better
+        const error: SerializedError = {
+          code: '401',
+          message: 'not authorized',
+        }
+
+        throw error
+      }
+
+      token = auth.token
+    }
+
+    // Fetch details about a notebook and return them
+    await dispatch(fetchNotebook({ id: data.id!, jwt: token })).unwrap()
     return data
   }
 )
 
+/**
+ * Returns details about a notebook.
+ */
 export const fetchNotebook = createAsyncThunk(
   'notebook/fetchNotebook',
   async (
@@ -79,7 +112,11 @@ export const fetchNotebook = createAsyncThunk(
   ) => {
     // TODO Authorization
     try {
-      const response = await fetch('/api/notebook/' + id)
+      const response = await fetch('/api/notebook/' + id, {
+        headers: {
+          Authorization: jwt ? 'Bearer ' + jwt : '',
+        },
+      })
 
       const data = await response.json()
 
