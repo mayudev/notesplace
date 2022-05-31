@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import PasswordPrompt from '../../components/PasswordPrompt/PasswordPrompt'
 import Spinner from '../../components/Spinner/Spinner'
-import { applyTheme, clearToken } from '../../features/global/global.slice'
+import { clearToken } from '../../features/global/global.slice'
 import {
   clearNotebook,
   fetchNotebook,
