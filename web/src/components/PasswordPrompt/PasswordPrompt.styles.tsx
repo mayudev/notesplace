@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { Accent, BackgroundColor } from '../../lib/colors'
 
 export const Container = styled.div`
@@ -13,6 +13,21 @@ export const Container = styled.div`
   align-items: center;
 `
 
+const Appear = keyframes`
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+
+  30% {
+    transform: scale(1.1);
+  }
+
+  to {
+    opacity: 1;
+  }
+  `
+
 export const Backdrop = styled.div`
   position: absolute;
   top: 0;
@@ -20,8 +35,10 @@ export const Backdrop = styled.div`
   left: 0;
   right: 0;
 
-  background: #00000070;
   z-index: -1;
+
+  background: #00000070;
+  animation: ${Appear} 0.2s linear forwards;
 `
 
 export const Contents = styled.div`
@@ -31,11 +48,11 @@ export const Contents = styled.div`
   border: 1px solid ${Accent};
 
   min-width: 400px;
+  animation: ${Appear} 0.3s ease-in-out forwards;
 `
 
 export const Message = styled.div`
   padding: 1rem;
-  font-weight: 300;
   font-size: 1.2rem;
 `
 
