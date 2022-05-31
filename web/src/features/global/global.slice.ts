@@ -16,7 +16,10 @@ const initialState: {
  */
 export const authenticate = createAsyncThunk(
   'global/authenticate',
-  async ({ notebook, password }: { notebook: string; password: string }) => {
+  async (
+    { notebook, password }: { notebook: string; password: string },
+    { rejectWithValue }
+  ) => {
     const response = await fetch('/api/auth', {
       headers: {
         Notebook: notebook,
@@ -30,10 +33,10 @@ export const authenticate = createAsyncThunk(
         token: await response.text(),
       }
     } else {
-      return {
+      return rejectWithValue({
         success: false,
         token: '',
-      }
+      })
     }
   }
 )
@@ -46,10 +49,16 @@ const globalSlice = createSlice({
       state.theme = action.payload
     },
   },
+  extraReducers(builder) {
+    builder.addCase(authenticate.fulfilled, (state, action) => {
+      state.token = action.payload.token
+    })
+  },
 })
 
 export const { applyTheme } = globalSlice.actions
 
 export const selectTheme = (state: RootState) => state.global.theme
+export const selectToken = (state: RootState) => state.global.token
 
 export default globalSlice.reducer

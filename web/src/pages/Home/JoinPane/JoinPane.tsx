@@ -1,7 +1,7 @@
 import { SerializedError } from '@reduxjs/toolkit'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch } from '../../../app/hooks'
+import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import Button from '../../../components/Button/Button'
 import PaneError from '../../../components/Panes/PaneError'
 import {
@@ -11,11 +11,18 @@ import {
   PaneHeading,
   PaneSubheading,
 } from '../../../components/Panes/Panes'
+import PasswordPrompt from '../../../components/PasswordPrompt/PasswordPrompt'
+import {
+  authenticate,
+  selectToken,
+} from '../../../features/global/global.slice'
 import { fetchNotebook } from '../../../features/notebook/notebook.slice'
 
 export default function JoinPane() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+
+  const token = useAppSelector(selectToken)
 
   const [query, setQuery] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
@@ -38,13 +45,13 @@ export default function JoinPane() {
     }, 2400)
   }
 
-  const load = async () => {
+  const load = async (token: string) => {
     // TODO input validation, url checking
     try {
       const result = await dispatch(
         fetchNotebook({
           id: query,
-          jwt: '', // TODO authentication
+          jwt: token, // TODO authentication
         })
       ).unwrap()
 
@@ -55,7 +62,6 @@ export default function JoinPane() {
       switch (err.code) {
         case '401':
           setShowPasswordPrompt(true)
-          alert('unauthorized')
           break
         case '404':
           showError('Notebook not found')
@@ -66,8 +72,21 @@ export default function JoinPane() {
     }
   }
 
-  const passwordEntered = (success: boolean, password: string) => {
+  const passwordEntered = async (success: boolean, password: string) => {
     setShowPasswordPrompt(false)
+
+    if (!success) return
+
+    const auth = await dispatch(
+      authenticate({
+        notebook: query,
+        password: password,
+      })
+    ).unwrap()
+
+    if (auth.success) {
+      load(auth.token)
+    }
   }
 
   return (
@@ -85,9 +104,10 @@ export default function JoinPane() {
         />
       </Container>
       <ButtonContainer>
-        <Button onClick={load}>Enter</Button>
+        <Button onClick={() => load(token)}>Enter</Button>
       </ButtonContainer>
       <PaneError visible={errorVisible} message={errorMessage} />
+      {showPasswordPrompt && <PasswordPrompt onSubmit={passwordEntered} />}
     </div>
   )
 }
