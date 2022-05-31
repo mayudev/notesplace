@@ -15,3 +15,20 @@ services:
 
     volumes:
       - ./db-data/:/var/lib/postgresql/data/
+
+  notesplace:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    
+    command: app
+    
+    ports:
+      - 8080:8080
+
+    environment:
+      - GIN_MODE=release
+      - DB_HOST=postgres
+
+    env_file:
+      - .env
