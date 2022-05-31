@@ -12,6 +12,7 @@ import {
   PaneSubheading,
 } from '../../../components/Panes/Panes'
 import PasswordPrompt from '../../../components/PasswordPrompt/PasswordPrompt'
+import Spinner from '../../../components/Spinner/Spinner'
 import { selectToken } from '../../../features/global/global.slice'
 import { fetchNotebook } from '../../../features/notebook/notebook.slice'
 
@@ -24,6 +25,7 @@ export default function JoinPane() {
   const [query, setQuery] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [errorVisible, setErrorVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
 
@@ -46,6 +48,7 @@ export default function JoinPane() {
     if (query.length === 0) return
 
     try {
+      setLoading(true)
       const result = await dispatch(
         fetchNotebook({
           id: query,
@@ -68,6 +71,8 @@ export default function JoinPane() {
           showError('An unknown error occurred.')
       }
     }
+
+    setLoading(false)
   }
 
   const passwordEntered = async (success: boolean, token: string) => {
@@ -105,7 +110,9 @@ export default function JoinPane() {
         />
       </Container>
       <ButtonContainer>
-        <Button onClick={submit}>Enter</Button>
+        <Button onClick={submit}>
+          {loading ? <Spinner width={16} borderWidth={2} primary /> : 'Enter'}
+        </Button>
       </ButtonContainer>
       <PaneError visible={errorVisible} message={errorMessage} />
       {showPasswordPrompt && (

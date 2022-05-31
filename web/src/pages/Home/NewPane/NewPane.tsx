@@ -11,6 +11,7 @@ import {
   PaneSubheading,
 } from '../../../components/Panes/Panes'
 import ProtectionLevelChooser from '../../../components/ProtectionLevelChooser/ProtectionLevelChooser'
+import Spinner from '../../../components/Spinner/Spinner'
 import {
   createNotebook,
   ProtectionLevel,
@@ -23,11 +24,14 @@ export default function NewPane() {
   const [level, setLevel] = useState(ProtectionLevel.None)
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const isEnabled = name.length > 0 && (level === 0 || password.length > 0)
 
   const create = async () => {
     if (!isEnabled) return
+
+    setLoading(true)
 
     try {
       const result = await dispatch(
@@ -44,6 +48,8 @@ export default function NewPane() {
       console.log(err.message)
       // TODO error handling
     }
+
+    setLoading(false)
   }
 
   return (
@@ -73,7 +79,7 @@ export default function NewPane() {
       </Container>
       <ButtonContainer>
         <Button disabled={!isEnabled} onClick={create}>
-          Create
+          {loading ? <Spinner width={16} borderWidth={2} primary /> : 'Create'}
         </Button>
       </ButtonContainer>
     </div>
