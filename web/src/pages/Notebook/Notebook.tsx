@@ -8,8 +8,10 @@ import { clearToken } from '../../features/global/global.slice'
 import {
   clearNotebook,
   selectNotebookData,
+  setUnlocked,
 } from '../../features/notebook/notebook.slice'
 import { fetchNotebook } from '../../features/notebook/notebook.thunks'
+import { ProtectionLevel } from '../../features/notebook/notebook.types'
 import Layout from './Layout/Layout'
 import { Center } from './Notebook.styles'
 import NotebookError from './NotebookError/NotebookError'
@@ -69,7 +71,11 @@ export default function Notebook() {
 
     if (!success) return
 
-    fetchData(params.id!, token)
+    if (notebook.protectionLevel === ProtectionLevel.Protected)
+      fetchData(params.id!, token)
+
+    if (notebook.protectionLevel === ProtectionLevel.ReadOnly)
+      dispatch(setUnlocked(true))
   }
 
   const logout = () => {
@@ -84,11 +90,11 @@ export default function Notebook() {
   const display = () => {
     switch (status) {
       case 'failed':
-        if (showPasswordPrompt) {
-          return (
-            <PasswordPrompt notebook={params.id!} onSubmit={passwordEntered} />
-          )
-        }
+        // if (showPasswordPrompt) {
+        //   return (
+        //     <PasswordPrompt notebook={params.id!} onSubmit={passwordEntered} />
+        //   )
+        // }
         return <NotebookError>{errorMessage}</NotebookError>
       case 'idle':
       case 'pending':
@@ -104,7 +110,10 @@ export default function Notebook() {
 
   return (
     <>
-      <Layout onClose={logout} />
+      {showPasswordPrompt && (
+        <PasswordPrompt notebook={params.id!} onSubmit={passwordEntered} />
+      )}
+      <Layout onUnlock={() => setShowPasswordPrompt(true)} onClose={logout} />
       {display()}
     </>
   )

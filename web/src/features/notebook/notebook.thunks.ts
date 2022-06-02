@@ -1,6 +1,7 @@
 import { createAsyncThunk, EntityId, SerializedError } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 import { authenticate } from '../global/global.slice'
+import { setUnlocked } from './notebook.slice'
 import {
   Note,
   Notebook,
@@ -82,7 +83,7 @@ export const fetchNotebook = createAsyncThunk(
   'notebook/fetchNotebook',
   async (
     { id, jwt }: { id: string; jwt: string | null },
-    { rejectWithValue }
+    { rejectWithValue, dispatch }
   ) => {
     try {
       const response = await fetch('/api/notebook/' + id, {
@@ -105,6 +106,12 @@ export const fetchNotebook = createAsyncThunk(
       data.protectionLevel = data.protection_level
       data.createdAt = data.created_at
       data.updatedAt = data.updated_at
+
+      if (data.protectionLevel !== 1) {
+        dispatch(setUnlocked(true))
+      } else {
+        dispatch(setUnlocked(false))
+      }
 
       return data as Notebook
     } catch (e: unknown) {

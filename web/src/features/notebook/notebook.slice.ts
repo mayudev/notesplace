@@ -1,4 +1,8 @@
-import { createEntityAdapter, createSlice } from '@reduxjs/toolkit'
+import {
+  createEntityAdapter,
+  createSlice,
+  PayloadAction,
+} from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 import {
   createNotebook,
@@ -25,6 +29,7 @@ const initialState = notebookAdapter.getInitialState<NotebookState>({
   updatedAt: null,
   status: 'idle',
   error: undefined,
+  unlocked: false,
 })
 
 const notebookSlice = createSlice({
@@ -33,6 +38,10 @@ const notebookSlice = createSlice({
   reducers: {
     clearNotebook: state => {
       state.id = ''
+      state.unlocked = false
+    },
+    setUnlocked: (state, action: PayloadAction<boolean>) => {
+      state.unlocked = action.payload
     },
   },
   extraReducers(builder) {
@@ -93,15 +102,15 @@ const notebookSlice = createSlice({
 
 export const selectNotebookId = (state: RootState): string => state.notebook.id
 
-export const selectNotebookData = (state: RootState): Notebook => {
+export const selectNotebookData = (state: RootState): NotebookState => {
   const notebook = state.notebook
-  const { ids, entities, status, error, ...rest } = notebook
-  return rest as Notebook
+  const { ids, entities, ...rest } = notebook
+  return rest as NotebookState
 }
 
 export const { selectById: selectNoteById, selectIds: selectNoteIds } =
   notebookAdapter.getSelectors((state: RootState) => state.notebook)
 
-export const { clearNotebook } = notebookSlice.actions
+export const { clearNotebook, setUnlocked } = notebookSlice.actions
 
 export default notebookSlice.reducer

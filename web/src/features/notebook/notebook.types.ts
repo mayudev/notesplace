@@ -9,6 +9,7 @@ export type Status = 'idle' | 'pending' | 'succeeded' | 'failed'
 export interface NotebookState extends Omit<Notebook, 'notes'> {
   status: Status
   error: string | undefined
+  unlocked: boolean
 }
 
 export interface Notebook {
