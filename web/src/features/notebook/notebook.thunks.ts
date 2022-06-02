@@ -1,4 +1,4 @@
-import { createAsyncThunk, SerializedError } from '@reduxjs/toolkit'
+import { createAsyncThunk, EntityId, SerializedError } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 import { authenticate } from '../global/global.slice'
 import {
@@ -147,6 +147,44 @@ export const noteCreate = createAsyncThunk(
 
       data.notebookId = data.notebook_id
       return data as Note
+    } catch (e) {
+      const err = e as SerializedError
+      return rejectWithValue(err)
+    }
+  }
+)
+
+/**
+ * Deletes a note
+ */
+export const noteDelete = createAsyncThunk(
+  'notebook/noteDelete',
+  async ({ id }: { id: EntityId }, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState
+      const jwt = state.global.token
+
+      const response = await fetch('/api/note/' + id, {
+        method: 'DELETE',
+        headers: {
+          Authorization: jwt ? 'Bearer ' + jwt : '',
+        },
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+
+        const error: SerializedError = {
+          code: response.status.toString(),
+          message: data.message,
+        }
+
+        throw error
+      }
+
+      return {
+        id,
+      }
     } catch (e) {
       const err = e as SerializedError
       return rejectWithValue(err)

@@ -1,6 +1,8 @@
 import { EntityId } from '@reduxjs/toolkit'
-import { useAppSelector } from '../../app/hooks'
+import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { selectNoteById } from '../../features/notebook/notebook.slice'
+import { noteDelete } from '../../features/notebook/notebook.thunks'
+import Button from '../Button/Button'
 
 type Params = {
   // Note ID
@@ -8,11 +10,21 @@ type Params = {
 }
 
 export default function Note({ noteId }: Params) {
+  const dispatch = useAppDispatch()
   const note = useAppSelector(state => selectNoteById(state, noteId))!
+
+  const deleteNote = () => {
+    dispatch(
+      noteDelete({
+        id: note.id,
+      })
+    )
+  }
 
   return (
     <div>
-      {note.id} Order: {note.order}
+      {note.id} Order: {note.order}{' '}
+      <Button onClick={() => deleteNote()}>delete</Button>
     </div>
   )
 }

@@ -1,6 +1,11 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
-import { createNotebook, fetchNotebook, noteCreate } from './notebook.thunks'
+import {
+  createNotebook,
+  fetchNotebook,
+  noteCreate,
+  noteDelete,
+} from './notebook.thunks'
 import {
   Note,
   Notebook,
@@ -58,8 +63,15 @@ const notebookSlice = createSlice({
         state.status = 'failed'
         state.error = action.error.message
       })
+
+      // noteCreate
       .addCase(noteCreate.fulfilled, (state, action) => {
         notebookAdapter.upsertOne(state, action.payload)
+      })
+
+      // noteDelete
+      .addCase(noteDelete.fulfilled, (state, action) => {
+        notebookAdapter.removeOne(state, action.payload.id)
       })
   },
 })
