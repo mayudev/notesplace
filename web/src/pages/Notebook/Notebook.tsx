@@ -13,6 +13,7 @@ import {
 import Layout from './Layout/Layout'
 import { Center } from './Notebook.styles'
 import NotebookError from './NotebookError/NotebookError'
+import Notes from './Notes/Notes'
 
 type Params = {
   id: string
@@ -97,7 +98,7 @@ export default function Notebook() {
           </Center>
         )
       case 'succeeded':
-        return <div>name: {notebook.name}</div>
+        return <Notes />
     }
   }
 

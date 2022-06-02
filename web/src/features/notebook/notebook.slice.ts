@@ -21,7 +21,9 @@ interface NotebookState extends Omit<Notebook, 'notes'> {
   error: string | undefined
 }
 
-const notebookAdapter = createEntityAdapter<Note>()
+const notebookAdapter = createEntityAdapter<Note>({
+  sortComparer: (a, b) => b.order - a.order, // Sort by reversed order (highest = first)
+})
 
 const initialState = notebookAdapter.getInitialState<NotebookState>({
   id: '',
@@ -110,7 +112,6 @@ export const fetchNotebook = createAsyncThunk(
     { id, jwt }: { id: string; jwt: string | null },
     { rejectWithValue }
   ) => {
-    // TODO Authorization
     try {
       const response = await fetch('/api/notebook/' + id, {
         headers: {
@@ -135,6 +136,46 @@ export const fetchNotebook = createAsyncThunk(
 
       return data as Notebook
     } catch (e: unknown) {
+      const err = e as SerializedError
+      return rejectWithValue(err)
+    }
+  }
+)
+
+/**
+ * Creates a note
+ */
+export const noteCreate = createAsyncThunk(
+  'notebook/noteCreate',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState
+      const jwt = state.global.token
+
+      const response = await fetch('/api/note/', {
+        method: 'PUT',
+        headers: {
+          Authorization: jwt ? 'Bearer ' + jwt : '',
+        },
+        body: JSON.stringify({
+          notebook_id: state.notebook.id,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        const error: SerializedError = {
+          code: response.status.toString(),
+          message: data.message,
+        }
+
+        throw error
+      }
+
+      data.notebookId = data.notebook_id
+      return data as Note
+    } catch (e) {
       const err = e as SerializedError
       return rejectWithValue(err)
     }
@@ -167,6 +208,8 @@ const notebookSlice = createSlice({
         state.createdAt = action.payload.createdAt
         state.updatedAt = action.payload.updatedAt
 
+        notebookAdapter.removeAll(state)
+
         if (action.payload.notes) {
           notebookAdapter.upsertMany(state, action.payload.notes)
         }
@@ -174,6 +217,9 @@ const notebookSlice = createSlice({
       .addCase(fetchNotebook.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message
+      })
+      .addCase(noteCreate.fulfilled, (state, action) => {
+        notebookAdapter.upsertOne(state, action.payload)
       })
   },
 })
@@ -185,6 +231,9 @@ export const selectNotebookData = (state: RootState): Notebook => {
   const { ids, entities, status, error, ...rest } = notebook
   return rest as Notebook
 }
+
+export const { selectById: selectNoteById, selectIds: selectNoteIds } =
+  notebookAdapter.getSelectors((state: RootState) => state.notebook)
 
 export const { clearNotebook } = notebookSlice.actions
 
