@@ -1,4 +1,4 @@
-import { ProtectionLevel } from '../../features/notebook/notebook.slice'
+import { ProtectionLevel } from '../../features/notebook/notebook.types'
 import { Form, Radio } from './ProtectionLevelChooser.styles'
 
 export default function ProtectionLevelChooser({

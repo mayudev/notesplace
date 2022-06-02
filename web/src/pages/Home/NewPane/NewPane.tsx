@@ -12,10 +12,8 @@ import {
 } from '../../../components/Panes/Panes'
 import ProtectionLevelChooser from '../../../components/ProtectionLevelChooser/ProtectionLevelChooser'
 import Spinner from '../../../components/Spinner/Spinner'
-import {
-  createNotebook,
-  ProtectionLevel,
-} from '../../../features/notebook/notebook.slice'
+import { createNotebook } from '../../../features/notebook/notebook.thunks'
+import { ProtectionLevel } from '../../../features/notebook/notebook.types'
 
 export default function NewPane() {
   const dispatch = useAppDispatch()

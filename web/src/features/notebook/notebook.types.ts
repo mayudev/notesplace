@@ -1,4 +1,15 @@
-import { ProtectionLevel } from './notebook.slice'
+export enum ProtectionLevel {
+  None,
+  ReadOnly,
+  Protected,
+}
+
+export type Status = 'idle' | 'pending' | 'succeeded' | 'failed'
+
+export interface NotebookState extends Omit<Notebook, 'notes'> {
+  status: Status
+  error: string | undefined
+}
 
 export interface Notebook {
   id: string

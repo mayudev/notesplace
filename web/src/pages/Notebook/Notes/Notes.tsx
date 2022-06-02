@@ -1,10 +1,8 @@
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import Button from '../../../components/Button/Button'
 import Note from '../../../components/Note/Note'
-import {
-  noteCreate,
-  selectNoteIds,
-} from '../../../features/notebook/notebook.slice'
+import { selectNoteIds } from '../../../features/notebook/notebook.slice'
+import { noteCreate } from '../../../features/notebook/notebook.thunks'
 
 export default function Notes() {
   const dispatch = useAppDispatch()

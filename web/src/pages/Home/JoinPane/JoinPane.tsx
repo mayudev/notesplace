@@ -14,7 +14,7 @@ import {
 import PasswordPrompt from '../../../components/PasswordPrompt/PasswordPrompt'
 import Spinner from '../../../components/Spinner/Spinner'
 import { selectToken } from '../../../features/global/global.slice'
-import { fetchNotebook } from '../../../features/notebook/notebook.slice'
+import { fetchNotebook } from '../../../features/notebook/notebook.thunks'
 
 export default function JoinPane() {
   const dispatch = useAppDispatch()

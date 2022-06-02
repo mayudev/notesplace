@@ -7,9 +7,9 @@ import Spinner from '../../components/Spinner/Spinner'
 import { clearToken } from '../../features/global/global.slice'
 import {
   clearNotebook,
-  fetchNotebook,
   selectNotebookData,
 } from '../../features/notebook/notebook.slice'
+import { fetchNotebook } from '../../features/notebook/notebook.thunks'
 import Layout from './Layout/Layout'
 import { Center } from './Notebook.styles'
 import NotebookError from './NotebookError/NotebookError'
