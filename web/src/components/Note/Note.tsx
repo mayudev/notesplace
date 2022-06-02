@@ -14,11 +14,7 @@ export default function Note({ noteId }: Params) {
   const note = useAppSelector(state => selectNoteById(state, noteId))!
 
   const deleteNote = () => {
-    dispatch(
-      noteDelete({
-        id: note.id,
-      })
-    )
+    dispatch(noteDelete(note))
   }
 
   return (

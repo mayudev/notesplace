@@ -71,7 +71,23 @@ const notebookSlice = createSlice({
 
       // noteDelete
       .addCase(noteDelete.fulfilled, (state, action) => {
-        notebookAdapter.removeOne(state, action.payload.id)
+        const order = action.payload.note.order
+
+        notebookAdapter.removeOne(state, action.payload.note.id)
+
+        let notes = notebookAdapter
+          .getSelectors()
+          .selectAll(state)
+          .filter(note => note.order > order)
+
+        notes.forEach(note => {
+          notebookAdapter.updateOne(state, {
+            id: note.id,
+            changes: {
+              order: note.order - 1,
+            },
+          })
+        })
       })
   },
 })

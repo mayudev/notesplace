@@ -159,12 +159,12 @@ export const noteCreate = createAsyncThunk(
  */
 export const noteDelete = createAsyncThunk(
   'notebook/noteDelete',
-  async ({ id }: { id: EntityId }, { getState, rejectWithValue }) => {
+  async (note: Note, { getState, rejectWithValue }) => {
     try {
       const state = getState() as RootState
       const jwt = state.global.token
 
-      const response = await fetch('/api/note/' + id, {
+      const response = await fetch('/api/note/' + note.id, {
         method: 'DELETE',
         headers: {
           Authorization: jwt ? 'Bearer ' + jwt : '',
@@ -183,7 +183,7 @@ export const noteDelete = createAsyncThunk(
       }
 
       return {
-        id,
+        note,
       }
     } catch (e) {
       const err = e as SerializedError
