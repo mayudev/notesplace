@@ -75,19 +75,18 @@ const notebookSlice = createSlice({
 
         notebookAdapter.removeOne(state, action.payload.note.id)
 
-        let notes = notebookAdapter
+        notebookAdapter
           .getSelectors()
           .selectAll(state)
           .filter(note => note.order > order)
-
-        notes.forEach(note => {
-          notebookAdapter.updateOne(state, {
-            id: note.id,
-            changes: {
-              order: note.order - 1,
-            },
+          .forEach(note => {
+            notebookAdapter.updateOne(state, {
+              id: note.id,
+              changes: {
+                order: note.order - 1,
+              },
+            })
           })
-        })
       })
   },
 })
