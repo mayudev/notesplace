@@ -104,7 +104,15 @@ export default function Notebook() {
           </Center>
         )
       case 'succeeded':
-        return <Notes />
+        return (
+          <>
+            <Layout
+              onUnlock={() => setShowPasswordPrompt(true)}
+              onClose={logout}
+            />
+            <Notes />
+          </>
+        )
     }
   }
 
@@ -113,7 +121,6 @@ export default function Notebook() {
       {showPasswordPrompt && (
         <PasswordPrompt notebook={params.id!} onSubmit={passwordEntered} />
       )}
-      <Layout onUnlock={() => setShowPasswordPrompt(true)} onClose={logout} />
       {display()}
     </>
   )
