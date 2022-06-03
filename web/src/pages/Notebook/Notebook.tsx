@@ -71,11 +71,11 @@ export default function Notebook() {
 
     if (!success) return
 
-    if (notebook.protectionLevel === ProtectionLevel.Protected)
-      fetchData(params.id!, token)
-
-    if (notebook.protectionLevel === ProtectionLevel.ReadOnly)
+    if (notebook.protectionLevel === ProtectionLevel.ReadOnly) {
       dispatch(setUnlocked(true))
+    } else {
+      fetchData(params.id!, token)
+    }
   }
 
   const logout = () => {
