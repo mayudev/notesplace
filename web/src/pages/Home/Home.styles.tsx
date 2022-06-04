@@ -1,5 +1,14 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { BackgroundSecondary } from '../../lib/colors'
+
+const Appear = keyframes`
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; }
+`
+
+export const Container = styled.div`
+  animation: ${Appear} 0.34s ease-out;
+`
 
 export const Hero = styled.section`
   max-width: 500px;

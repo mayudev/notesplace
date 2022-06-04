@@ -1,11 +1,19 @@
-import { Center, Heading, Hero, Pane, Panes, Subheading } from './Home.styles'
+import {
+  Center,
+  Container,
+  Heading,
+  Hero,
+  Pane,
+  Panes,
+  Subheading,
+} from './Home.styles'
 import JoinPane from './JoinPane/JoinPane'
 import NewPane from './NewPane/NewPane'
 import TopBar from './TopBar/TopBar'
 
 export default function Home() {
   return (
-    <div>
+    <Container>
       <TopBar />
       <Hero>
         <Heading>There are notes, and this is their place.</Heading>
@@ -22,6 +30,6 @@ export default function Home() {
           <NewPane />
         </Pane>
       </Panes>
-    </div>
+    </Container>
   )
 }
