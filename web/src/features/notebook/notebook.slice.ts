@@ -9,13 +9,9 @@ import {
   fetchNotebook,
   noteCreate,
   noteDelete,
+  noteUpdate,
 } from './notebook.thunks'
-import {
-  Note,
-  Notebook,
-  NotebookState,
-  ProtectionLevel,
-} from './notebook.types'
+import { Note, NotebookState, ProtectionLevel } from './notebook.types'
 
 const notebookAdapter = createEntityAdapter<Note>({
   sortComparer: (a, b) => b.order - a.order, // Sort by reversed order (highest = first)
@@ -76,6 +72,17 @@ const notebookSlice = createSlice({
       // noteCreate
       .addCase(noteCreate.fulfilled, (state, action) => {
         notebookAdapter.upsertOne(state, action.payload)
+      })
+
+      // noteUpdate
+      .addCase(noteUpdate.fulfilled, (state, action) => {
+        notebookAdapter.updateOne(state, {
+          id: action.payload.id,
+          changes: {
+            title: action.payload.title,
+            content: action.payload.content,
+          },
+        })
       })
 
       // noteDelete

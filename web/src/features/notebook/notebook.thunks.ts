@@ -1,4 +1,4 @@
-import { createAsyncThunk, EntityId, SerializedError } from '@reduxjs/toolkit'
+import { createAsyncThunk, SerializedError } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 import { authenticate } from '../global/global.slice'
 import { setUnlocked } from './notebook.slice'
@@ -138,6 +138,49 @@ export const noteCreate = createAsyncThunk(
         },
         body: JSON.stringify({
           notebook_id: state.notebook.id,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        const error: SerializedError = {
+          code: response.status.toString(),
+          message: data.message,
+        }
+
+        throw error
+      }
+
+      data.notebookId = data.notebook_id
+      return data as Note
+    } catch (e) {
+      const err = e as SerializedError
+      return rejectWithValue(err)
+    }
+  }
+)
+
+/**
+ * Updates a note
+ */
+export const noteUpdate = createAsyncThunk(
+  'notebook/noteUpdate',
+  async (note: Note, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState
+      const jwt = state.global.token
+
+      const response = await fetch('/api/note/', {
+        method: 'PUT',
+        headers: {
+          Authorization: jwt ? 'Bearer ' + jwt : '',
+        },
+        body: JSON.stringify({
+          id: note.id,
+          notebook_id: note.notebookId || (note as any).notebook_id, // stupid me
+          title: note.title,
+          content: note.content,
         }),
       })
 
