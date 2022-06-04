@@ -1,6 +1,8 @@
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { EntityId } from '@reduxjs/toolkit'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
+import Editor from '../../../components/Editor/Editor'
 import Note from '../../../components/Note/Note'
 import { selectNoteIds } from '../../../features/notebook/notebook.slice'
 import { noteCreate } from '../../../features/notebook/notebook.thunks'
@@ -14,6 +16,10 @@ export default function Notes() {
     dispatch(noteCreate())
   }
 
+  const update = (id: EntityId) => {
+    console.log('update ' + id)
+  }
+
   return (
     <Container>
       <CreateNote
@@ -24,8 +30,9 @@ export default function Notes() {
         <FontAwesomeIcon size="3x" icon={faPlus} />
       </CreateNote>
       {noteIds.map(noteId => (
-        <Note key={noteId} noteId={noteId} />
+        <Note key={noteId} noteId={noteId} onClick={() => update(noteId)} />
       ))}
+      <Editor />
     </Container>
   )
 }

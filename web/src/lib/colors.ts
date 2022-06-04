@@ -20,6 +20,11 @@ export const ForegroundColor = theme('mode', {
   dark: '#f5f6f7',
 })
 
+export const ForegroudNote = theme('mode', {
+  light: '#303030',
+  dark: '#f5f6f7',
+})
+
 export const Accent = theme('mode', {
   light: '#1c7ed6',
   dark: '#5facec',

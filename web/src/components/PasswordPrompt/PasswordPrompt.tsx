@@ -3,11 +3,10 @@ import { CSSTransition } from 'react-transition-group'
 import { useAppDispatch } from '../../app/hooks'
 import { authenticate } from '../../features/global/global.slice'
 import Button from '../Button/Button'
+import { Backdrop, Modal } from '../Modal'
 import { Input } from '../Panes/Panes'
 import {
-  Backdrop,
   Buttons,
-  Container,
   Contents,
   IncorrectMessage,
   Message,
@@ -70,7 +69,7 @@ export default function PasswordPrompt(props: Props) {
   }
 
   return (
-    <Container>
+    <Modal>
       <Backdrop onClick={close} />
       <Contents>
         <Message>Enter password to continue.</Message>
@@ -96,6 +95,6 @@ export default function PasswordPrompt(props: Props) {
           <Button onClick={() => props.onSubmit(false, '')}>Cancel</Button>
         </Buttons>
       </Contents>
-    </Container>
+    </Modal>
   )
 }
