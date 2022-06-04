@@ -1,7 +1,6 @@
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
-import Button from '../../../components/Button/Button'
 import Note from '../../../components/Note/Note'
 import { selectNoteIds } from '../../../features/notebook/notebook.slice'
 import { noteCreate } from '../../../features/notebook/notebook.thunks'

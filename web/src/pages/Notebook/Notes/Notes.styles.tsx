@@ -1,9 +1,5 @@
 import styled from 'styled-components'
-import {
-  Accent,
-  BackgroundNavbar,
-  BackgroundSecondary,
-} from '../../../lib/colors'
+import { Accent, BackgroundSecondary } from '../../../lib/colors'
 
 export const Container = styled.div`
   display: grid;
