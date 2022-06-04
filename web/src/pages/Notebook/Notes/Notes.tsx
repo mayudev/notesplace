@@ -1,6 +1,7 @@
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { EntityId } from '@reduxjs/toolkit'
+import { useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import Editor from '../../../components/Editor/Editor'
 import Note from '../../../components/Note/Note'
@@ -12,12 +13,14 @@ export default function Notes() {
   const dispatch = useAppDispatch()
   const noteIds = useAppSelector(selectNoteIds)
 
+  const [editingId, setEditingId] = useState('')
+
   const create = () => {
     dispatch(noteCreate())
   }
 
   const update = (id: EntityId) => {
-    console.log('update ' + id)
+    setEditingId(id.toString())
   }
 
   return (
@@ -32,7 +35,9 @@ export default function Notes() {
       {noteIds.map(noteId => (
         <Note key={noteId} noteId={noteId} onClick={() => update(noteId)} />
       ))}
-      <Editor />
+      {editingId && (
+        <Editor onClose={() => setEditingId('')} noteId={editingId} />
+      )}
     </Container>
   )
 }

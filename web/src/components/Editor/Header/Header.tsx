@@ -1,12 +1,16 @@
 import Button from '../../Button/Button'
 import { Container } from './Header.styles'
 
-export default function Header() {
+type Props = {
+  onSave: () => void
+}
+
+export default function Header(props: Props) {
   return (
     <Container>
       <div>Edit note</div>
       <span style={{ flex: 1 }} />
-      <Button>Save</Button>
+      <Button onClick={props.onSave}>Save</Button>
     </Container>
   )
 }
