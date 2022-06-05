@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { selectNoteById } from '../../features/notebook/notebook.slice'
 import { noteUpdate } from '../../features/notebook/notebook.thunks'
