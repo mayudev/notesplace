@@ -27,13 +27,11 @@ export const Container = styled.div<Props>`
 
   animation: ${Enter} 0.2s;
 
-  @media (orientation: portrait) {
-    height: 90vh;
-  }
-
   .exiting {
     background: blue;
   }
+
+  max-height: 100%;
 `
 
 export const Contents = styled.section`
@@ -71,7 +69,6 @@ export const Textarea = styled(TextareaAutosize)`
   font: inherit;
   background: inherit;
 
-  min-height: 400px;
   max-height: 60vh;
 
   font-size: 17px;
@@ -79,15 +76,3 @@ export const Textarea = styled(TextareaAutosize)`
 
   color: ${ForegroudNote};
 `
-
-// export const Textarea = styled.textarea`
-//   display: block;
-//   width: 100%;
-//   box-sizing: border-box;
-
-//   border: none;
-//   outline: none;
-//   resize: none;
-
-//   font: inherit;
-// `
