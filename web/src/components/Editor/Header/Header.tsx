@@ -1,16 +1,36 @@
-import Button from '../../Button/Button'
-import { Container } from './Header.styles'
+import { faClose, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { NavButton } from '../../Button/NavButton'
+import { Container, Text } from './Header.styles'
 
 type Props = {
   onSave: () => void
+  onRemove: () => void
 }
 
 export default function Header(props: Props) {
   return (
     <Container>
-      <div>Edit note</div>
+      <Text>Edit note</Text>
       <span style={{ flex: 1 }} />
-      <Button onClick={props.onSave}>Save</Button>
+      <NavButton
+        withText
+        error
+        title="Delete"
+        aria-label="Delete"
+        onClick={() => props.onRemove()}
+      >
+        <FontAwesomeIcon icon={faTrash} />
+        <span>Delete</span>
+      </NavButton>
+      <NavButton
+        primary
+        title="Save and exit"
+        aria-label="Save and exit"
+        onClick={() => props.onSave()}
+      >
+        <FontAwesomeIcon icon={faClose} />
+      </NavButton>
     </Container>
   )
 }

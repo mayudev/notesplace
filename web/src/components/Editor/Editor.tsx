@@ -1,8 +1,9 @@
 import { useLayoutEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { selectNoteById } from '../../features/notebook/notebook.slice'
-import { noteUpdate } from '../../features/notebook/notebook.thunks'
+import { noteDelete, noteUpdate } from '../../features/notebook/notebook.thunks'
 import { Backdrop, Modal } from '../Modal'
+import ConfirmationPrompt from './ConfirmationPrompt/ConfirmationPrompt'
 import { Container, Contents, Textarea, TitleInput } from './Editor.styles'
 import Header from './Header/Header'
 
@@ -18,6 +19,8 @@ export default function Editor(props: Props) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
 
+  const [deleteRequest, setDeleteRequest] = useState(false)
+
   useLayoutEffect(() => {
     if (!note) return
 
@@ -26,7 +29,8 @@ export default function Editor(props: Props) {
   }, [note])
 
   const close = () => {
-    props.onClose()
+    if (note.content !== content || note.title !== title) save()
+    else props.onClose()
   }
 
   const save = () => {
@@ -41,11 +45,16 @@ export default function Editor(props: Props) {
     props.onClose()
   }
 
+  const remove = () => {
+    dispatch(noteDelete(note))
+    props.onClose()
+  }
+
   return (
     <Modal>
       <Backdrop onClick={close} />
       <Container>
-        <Header onSave={save} />
+        <Header onSave={close} onRemove={() => setDeleteRequest(true)} />
         <Contents>
           <TitleInput
             placeholder="Title"
@@ -59,6 +68,14 @@ export default function Editor(props: Props) {
           ></Textarea>
         </Contents>
       </Container>
+      {deleteRequest && (
+        <ConfirmationPrompt
+          message="Are you sure you want to delete this note?"
+          confirmButton="Delete"
+          onCancel={() => setDeleteRequest(false)}
+          onConfirm={() => remove()}
+        />
+      )}
     </Modal>
   )
 }
