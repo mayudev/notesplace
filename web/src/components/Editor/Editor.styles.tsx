@@ -35,6 +35,7 @@ export const TitleInput = styled.input`
 
   font: inherit;
   background: inherit;
+  color: inherit;
 
   font-size: 1.5rem;
   font-weight: 500;
