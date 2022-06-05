@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { css, keyframes } from 'styled-components'
 import {
   Accent,
   BackgroundColor,
@@ -7,7 +7,16 @@ import {
 } from '../../lib/colors'
 import TextareaAutosize from 'react-textarea-autosize'
 
-export const Container = styled.div`
+const Enter = keyframes`
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+`
+
+type Props = {
+  exiting?: boolean
+}
+
+export const Container = styled.div<Props>`
   background: ${BackgroundColor};
   border-radius: 4px;
   min-width: 600px;
@@ -15,6 +24,12 @@ export const Container = styled.div`
   box-shadow: 0 4px 11px rgba(0, 0, 0, 0.25);
 
   border: 1px solid ${Accent};
+
+  animation: ${Enter} 0.2s;
+
+  .exiting {
+    background: blue;
+  }
 `
 
 export const Contents = styled.section`

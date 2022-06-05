@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { createGlobalStyle, ThemeProvider } from 'styled-components'
 import { useAppDispatch, useAppSelector } from './app/hooks'
+import Editor from './components/Editor/Editor'
 import { applyTheme, selectTheme } from './features/global/global.slice'
 import { BackgroundColor, Error, ForegroundColor } from './lib/colors'
 import Home from './pages/Home/Home'
@@ -45,7 +46,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/nb/:id" element={<Notebook />} />
+          <Route path="/nb/:id" element={<Notebook />}>
+            <Route path="edit/:note" element={<Editor />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

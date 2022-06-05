@@ -2,6 +2,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { EntityId } from '@reduxjs/toolkit'
 import { useState } from 'react'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { CSSTransition } from 'react-transition-group'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import Editor from '../../../components/Editor/Editor'
@@ -13,6 +14,7 @@ import { Container, CreateNote } from './Notes.styles'
 export default function Notes() {
   const dispatch = useAppDispatch()
   const noteIds = useAppSelector(selectNoteIds)
+  const navigate = useNavigate()
 
   const [editingId, setEditingId] = useState('')
 
@@ -21,7 +23,7 @@ export default function Notes() {
   }
 
   const update = (id: EntityId) => {
-    setEditingId(id.toString())
+    navigate('edit/' + id)
   }
 
   return (
@@ -37,14 +39,7 @@ export default function Notes() {
         <Note key={noteId} noteId={noteId} onClick={() => update(noteId)} />
       ))}
 
-      <CSSTransition
-        in={editingId !== ''}
-        timeout={200}
-        classNames="editor"
-        unmountOnExit
-      >
-        <Editor onClose={() => setEditingId('')} noteId={editingId} />
-      </CSSTransition>
+      <Outlet />
     </Container>
   )
 }

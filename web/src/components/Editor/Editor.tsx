@@ -1,4 +1,5 @@
 import { useLayoutEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { selectNoteById } from '../../features/notebook/notebook.slice'
 import { noteDelete, noteUpdate } from '../../features/notebook/notebook.thunks'
@@ -7,19 +8,22 @@ import ConfirmationPrompt from './ConfirmationPrompt/ConfirmationPrompt'
 import { Container, Contents, Textarea, TitleInput } from './Editor.styles'
 import Header from './Header/Header'
 
-type Props = {
-  noteId: string
-  onClose: () => void
+type Params = {
+  note: string
 }
 
-export default function Editor(props: Props) {
+export default function Editor() {
+  const params = useParams<Params>()
+  const navigate = useNavigate()
+
   const dispatch = useAppDispatch()
-  const note = useAppSelector(state => selectNoteById(state, props.noteId))!
+  const note = useAppSelector(state => selectNoteById(state, params.note!))!
 
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
 
   const [deleteRequest, setDeleteRequest] = useState(false)
+  const [exiting, setExiting] = useState(false)
 
   useLayoutEffect(() => {
     if (!note) return
@@ -28,9 +32,16 @@ export default function Editor(props: Props) {
     if (note.content) setContent(note.content)
   }, [note])
 
+  const exit = () => {
+    setExiting(true)
+    setTimeout(() => {
+      navigate(-1)
+    }, 200)
+  }
+
   const close = () => {
     if (note.content !== content || note.title !== title) save()
-    else props.onClose()
+    else exit()
   }
 
   const save = () => {
@@ -42,16 +53,16 @@ export default function Editor(props: Props) {
       })
     )
 
-    props.onClose()
+    exit()
   }
 
   const remove = () => {
     dispatch(noteDelete(note))
-    props.onClose()
+    exit()
   }
 
   return (
-    <Modal>
+    <Modal className={`${exiting && 'editor-exit-active'}`}>
       <Backdrop onClick={close} />
       <Container>
         <Header onSave={close} onRemove={() => setDeleteRequest(true)} />
