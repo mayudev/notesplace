@@ -72,6 +72,7 @@ export const createNotebook = createAsyncThunk(
 
     // Fetch details about a notebook and return them
     await dispatch(fetchNotebook({ id: data.id!, jwt: token })).unwrap()
+    await dispatch(setUnlocked(true))
     return data
   }
 )
