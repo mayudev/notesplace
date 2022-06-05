@@ -15,7 +15,7 @@ type Props = {
 
 export default function ConfirmationPrompt(props: Props) {
   return (
-    <Modal>
+    <Modal style={{ zIndex: 5 }}>
       <Backdrop />
       <Contents>
         <Message>{props.message}</Message>
