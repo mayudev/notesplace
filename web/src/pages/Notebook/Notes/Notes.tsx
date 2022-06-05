@@ -2,6 +2,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { EntityId } from '@reduxjs/toolkit'
 import { useState } from 'react'
+import { CSSTransition } from 'react-transition-group'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import Editor from '../../../components/Editor/Editor'
 import Note from '../../../components/Note/Note'
@@ -35,9 +36,15 @@ export default function Notes() {
       {noteIds.map(noteId => (
         <Note key={noteId} noteId={noteId} onClick={() => update(noteId)} />
       ))}
-      {editingId && (
+
+      <CSSTransition
+        in={editingId !== ''}
+        timeout={200}
+        classNames="editor"
+        unmountOnExit
+      >
         <Editor onClose={() => setEditingId('')} noteId={editingId} />
-      )}
+      </CSSTransition>
     </Container>
   )
 }

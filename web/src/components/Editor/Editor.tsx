@@ -19,6 +19,8 @@ export default function Editor(props: Props) {
   const [content, setContent] = useState('')
 
   useLayoutEffect(() => {
+    if (!note) return
+
     if (note.title) setTitle(note.title)
     if (note.content) setContent(note.content)
   }, [note])

@@ -8,6 +8,27 @@ export const Container = styled.div`
   gap: 10px;
 
   margin: 10px;
+
+  // Editor animation
+  .editor-enter {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  .editor-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .editor-exit {
+    opacity: 1;
+  }
+
+  .editor-exit-active {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
 `
 
 export const CreateNote = styled.button`
