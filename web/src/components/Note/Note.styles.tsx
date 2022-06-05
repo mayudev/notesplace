@@ -25,6 +25,12 @@ export const Container = styled.div`
 export const Title = styled.div`
   font-weight: 600;
   font-size: 1.1rem;
+
+  text-overflow: ellipsis;
+  overflow: hidden;
 `
 
-export const Content = styled.div``
+export const Content = styled.div`
+  text-overflow: ellipsis;
+  overflow: hidden;
+`
