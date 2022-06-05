@@ -32,5 +32,7 @@ export const Title = styled.div`
 
 export const Content = styled.div`
   text-overflow: ellipsis;
+  white-space: pre-wrap;
   overflow: hidden;
+  max-height: 200px;
 `

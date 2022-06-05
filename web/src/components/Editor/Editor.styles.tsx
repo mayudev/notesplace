@@ -19,13 +19,17 @@ type Props = {
 export const Container = styled.div<Props>`
   background: ${BackgroundColor};
   border-radius: 4px;
-  min-width: 600px;
+  min-width: min(500px, 100vw);
 
   box-shadow: 0 4px 11px rgba(0, 0, 0, 0.25);
 
   border: 1px solid ${Accent};
 
   animation: ${Enter} 0.2s;
+
+  @media (orientation: portrait) {
+    height: 90vh;
+  }
 
   .exiting {
     background: blue;
