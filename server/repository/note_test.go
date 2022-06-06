@@ -65,9 +65,8 @@ func TestGetNotesByNotebook(t *testing.T) {
 
 		assert.Len(t, got, 3)
 
-		assert.Equal(t, "note1", got[0].ID)
-		assert.Equal(t, "note2", got[1].ID)
-		assert.Equal(t, "note3", got[2].ID)
+		assert.NotEqual(t, got[0].ID, got[1].ID)
+		assert.NotEqual(t, got[1].ID, got[2].ID)
 	})
 }
 
