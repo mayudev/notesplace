@@ -20,7 +20,7 @@ jobs:
     - name: Build the Docker image
       run: |
         docker login --username "$GH_USERNAME" --password "$GH_TOKEN" ghcr.io
-        docker build . --file Dockerfile --tag notesplace:$(date +%s)
+        docker build . --file Dockerfile --tag "ghcr.io/$GH_USERNAME/notesplace:$(date +%s)"
         docker push "ghcr.io/$GH_USERNAME/notesplace:$(date +%s)"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
