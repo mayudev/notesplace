@@ -1,3 +1,8 @@
+networks:
+  app-internal:
+    internal: true
+  app-external:
+
 services:
   postgres:
     image: postgres:alpine
@@ -9,11 +14,10 @@ services:
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=notesplace
 
-    ports:
-      - 5432:5432
-
     volumes:
       - ./db-data/:/var/lib/postgresql/data/
+    networks:
+      - app-internal
 
   notesplace:
     build:
@@ -33,5 +37,18 @@ services:
 
     depends_on:
       - postgres
+    networks:
+      - app-internal
 
     restart: on-failure
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+    networks:
+      - app-internal
+      - app-external
