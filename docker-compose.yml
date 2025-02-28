@@ -22,7 +22,6 @@ services:
 
     env_file:
       - ".env"
-    command: app
 
     ports:
       - 8080:8080
@@ -30,6 +29,7 @@ services:
     environment:
       - GIN_MODE=release
       - DB_HOST=postgres
+      - DB_PASSWORD=secret
 
     depends_on:
       - postgres

@@ -19,5 +19,5 @@ COPY --from=frontend /app/build ./web
 RUN go build -v -o /usr/local/bin/app
 
 EXPOSE 8080
-CMD [ "app" ]
+CMD [ "/usr/local/bin/app" ]
 
