@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  packages: write
+
 jobs:
 
   build:
@@ -15,4 +18,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag notesplace:$(date +%s)
+      run: |
+        echo $GH_TOKEN | docker login ghcr.io -u $GH_USERNAME --password-stdin
+        docker build . --file Dockerfile --tag notesplace:$(date +%s)
+        docker push ghcr.io/$GH_USERNAME/notesplace:$(date +%s)
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_USERNAME: $ {{ github.repository_owner }}
+
