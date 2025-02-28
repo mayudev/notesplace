@@ -1,7 +1,9 @@
 services:
-
   postgres:
     image: postgres:alpine
+
+    env_file:
+      - ".env"
 
     environment:
       - POSTGRES_PASSWORD=secret
@@ -10,9 +12,6 @@ services:
     ports:
       - 5432:5432
 
-    env_file:
-      - .env
-
     volumes:
       - ./db-data/:/var/lib/postgresql/data/
 
@@ -20,9 +19,11 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
-    
+
+    env_file:
+      - ".env"
     command: app
-    
+
     ports:
       - 8080:8080
 
@@ -30,8 +31,7 @@ services:
       - GIN_MODE=release
       - DB_HOST=postgres
 
-    env_file:
-      - .env
-
     depends_on:
       - postgres
+
+    restart: on-failure
